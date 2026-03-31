@@ -1,9 +1,17 @@
 from __future__ import annotations
 
-import importlib.util
+import json
+import math
 from pathlib import Path
 
 import numpy as np
+
+try:
+    import torch
+    from torch import nn
+except Exception:
+    torch = None
+    nn = None
 
 try:
     from train import (
@@ -25,43 +33,287 @@ except Exception:
     select_runtime_device = None
 
 
-RUNS_DIR = Path(__file__).resolve().parent / "runs"
-SIMPLE_RUNS_DIR = Path(__file__).resolve().parent / "simpleruns"
+REPO_DIR = Path(__file__).resolve().parent
+RUNS_DIR = REPO_DIR / "runs"
+SIMPLE_RUNS_DIR = REPO_DIR / "simpleruns"
+BUNDLE_DIR = REPO_DIR / "lidar_model_bundle"
+
 LEGACY_CHECKPOINT_PATH = RUNS_DIR / "gru_lidar_classifier.pt"
 SIMPLE_CHECKPOINT_PATH = SIMPLE_RUNS_DIR / "pose_aligned_beam_transformer.pt"
-EXTERNAL_SIMPLETRAIN_PATH = Path(__file__).resolve().parent.parent / "lidarmodeltesting" / "simpletrain.py"
+BUNDLE_CHECKPOINT_PATH = BUNDLE_DIR / "best_model_checkpoint.pt"
+BUNDLE_METADATA_PATH = BUNDLE_DIR / "model_metadata.json"
+
 MAX_HISTORY = 64
 DEFAULT_OBSTACLE_LOGIT_BIAS = 0.0
 FALLBACK_OBSTACLE_MAX_CM = 1000.0
-USE_SIMPLE_MODEL = True
+FALLBACK_MODEL_BACKEND = "legacy_gru"
+
+INFERENCE_BACKEND_LEGACY_GRU = "legacy_gru"
+INFERENCE_BACKEND_SIMPLE_TRANSFORMER = "simple_transformer"
+INFERENCE_BACKEND_BUNDLE_CNN = "bundle_cnn"
+VALID_INFERENCE_BACKENDS = {
+    INFERENCE_BACKEND_LEGACY_GRU,
+    INFERENCE_BACKEND_SIMPLE_TRANSFORMER,
+    INFERENCE_BACKEND_BUNDLE_CNN,
+}
+
+CNN_MAX_LIDAR_CM = 5000.0
+CNN_POSE_X_SCALE = 20000.0
+CNN_POSE_Y_SCALE = 20000.0
+CNN_POSE_Z_SCALE = 2000.0
+CNN_DELTA_X_SCALE = 1000.0
+CNN_DELTA_Y_SCALE = 1000.0
+CNN_DELTA_Z_SCALE = 100.0
+CNN_PITCH_ROLL_SCALE = 45.0
 
 _INFERENCER = None
+_ACTIVE_BACKEND = FALLBACK_MODEL_BACKEND
 
 _FEATURE_HISTORY: list[np.ndarray] = []
 _SIGNATURE_HISTORY: list[np.ndarray] = []
 
 
+class ResidualBlock2D(nn.Module):
+    def __init__(self, channels: int, kernel_t: int, kernel_b: int, dropout: float, dilation_t: int = 1) -> None:
+        super().__init__()
+        padding = (dilation_t * (kernel_t // 2), kernel_b // 2)
+        self.block = nn.Sequential(
+            nn.Conv2d(
+                channels,
+                channels,
+                kernel_size=(kernel_t, kernel_b),
+                padding=padding,
+                dilation=(dilation_t, 1),
+            ),
+            nn.BatchNorm2d(channels),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Conv2d(
+                channels,
+                channels,
+                kernel_size=(kernel_t, kernel_b),
+                padding=padding,
+                dilation=(dilation_t, 1),
+            ),
+            nn.BatchNorm2d(channels),
+        )
+        self.act = nn.GELU()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.act(x + self.block(x))
+
+
+class ResidualBeamCNN(nn.Module):
+    def __init__(self, in_channels: int, width: int, depth: int, kernel_t: int, kernel_b: int, dropout: float) -> None:
+        super().__init__()
+        self.stem = nn.Sequential(
+            nn.Conv2d(in_channels, width, kernel_size=(kernel_t, kernel_b), padding=(kernel_t // 2, kernel_b // 2)),
+            nn.BatchNorm2d(width),
+            nn.GELU(),
+        )
+        dilations = [1, 2, 4, 1, 2, 4]
+        self.encoder = nn.Sequential(
+            *[
+                ResidualBlock2D(
+                    width,
+                    kernel_t=kernel_t,
+                    kernel_b=kernel_b,
+                    dropout=dropout,
+                    dilation_t=dilations[idx % len(dilations)],
+                )
+                for idx in range(depth)
+            ]
+        )
+        self.head = nn.Sequential(
+            nn.Conv1d(width, width, kernel_size=3, padding=1),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Conv1d(width, width // 2, kernel_size=3, padding=1),
+            nn.GELU(),
+            nn.Conv1d(width // 2, 1, kernel_size=1),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        features = self.encoder(self.stem(x))
+        current = features[:, :, -1, :]
+        return self.head(current).squeeze(1)
+
+
+class BeamTemporalCNN(nn.Module):
+    def __init__(self, in_channels: int, widths: tuple[int, ...], kernel_t: int, kernel_b: int, dropout: float) -> None:
+        super().__init__()
+        blocks: list[nn.Module] = []
+        channels = in_channels
+        for width in widths:
+            blocks.extend(
+                [
+                    nn.Conv2d(
+                        channels,
+                        width,
+                        kernel_size=(kernel_t, kernel_b),
+                        padding=(kernel_t // 2, kernel_b // 2),
+                    ),
+                    nn.BatchNorm2d(width),
+                    nn.GELU(),
+                    nn.Dropout(dropout),
+                ]
+            )
+            channels = width
+        self.encoder = nn.Sequential(*blocks)
+        self.head = nn.Sequential(
+            nn.Conv1d(channels, channels, kernel_size=3, padding=1),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Conv1d(channels, 1, kernel_size=1),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        features = self.encoder(x)
+        current = features[:, :, -1, :]
+        return self.head(current).squeeze(1)
+
+
+class BundleCnnInferencer:
+    binary_obstacle_only = True
+
+    def __init__(
+        self,
+        model: nn.Module,
+        device: torch.device,
+        threshold: float,
+        context_len: int,
+        beam_count: int,
+    ) -> None:
+        self.model = model
+        self.device = device
+        self.threshold = float(threshold)
+        self.context_len = int(context_len)
+        self.beam_count = int(beam_count)
+        self.max_history = max(0, self.context_len - 1)
+        self._beam_index = np.linspace(-1.0, 1.0, self.beam_count, dtype=np.float32)
+        self._prev_pose_xyz_cm: np.ndarray | None = None
+
+    def reset(self) -> None:
+        self._prev_pose_xyz_cm = None
+
+    def featurize_timestep(
+        self,
+        pose_xyz_cm: np.ndarray,
+        lidar_cm: np.ndarray,
+        basis: np.ndarray | None = None,
+    ) -> np.ndarray:
+        pose_arr = np.asarray(pose_xyz_cm, dtype=np.float32).reshape(3)
+        lidar_arr = np.asarray(lidar_cm, dtype=np.float32).reshape(self.beam_count)
+        sanitized_lidar, valid_mask = _sanitize_cnn_lidar(lidar_arr)
+        heading_deg = _heading_deg_from_basis(basis)
+        heading_rad = math.radians(heading_deg)
+        orient = np.asarray(
+            [
+                math.sin(heading_rad),
+                math.cos(heading_rad),
+                0.0,
+                0.0,
+            ],
+            dtype=np.float32,
+        )
+        deltas = np.zeros(3, dtype=np.float32)
+        if self._prev_pose_xyz_cm is not None:
+            deltas = pose_arr - self._prev_pose_xyz_cm
+        pose_scaled = pose_arr.copy()
+        pose_scaled[0] /= CNN_POSE_X_SCALE
+        pose_scaled[1] /= CNN_POSE_Y_SCALE
+        pose_scaled[2] /= CNN_POSE_Z_SCALE
+        delta_scaled = deltas.copy()
+        delta_scaled[0] /= CNN_DELTA_X_SCALE
+        delta_scaled[1] /= CNN_DELTA_Y_SCALE
+        delta_scaled[2] /= CNN_DELTA_Z_SCALE
+
+        channels = [sanitized_lidar, valid_mask]
+        for value in pose_scaled:
+            channels.append(np.full(self.beam_count, value, dtype=np.float32))
+        for value in orient:
+            channels.append(np.full(self.beam_count, value, dtype=np.float32))
+        for value in delta_scaled:
+            channels.append(np.full(self.beam_count, value, dtype=np.float32))
+        channels.append(self._beam_index.copy())
+        self._prev_pose_xyz_cm = pose_arr.copy()
+        return np.stack(channels, axis=0).astype(np.float32, copy=False)
+
+    def predict_current_obstacle_logits_from_feature_history(self, history: np.ndarray) -> np.ndarray:
+        history_arr = np.asarray(history, dtype=np.float32)
+        if history_arr.ndim != 3:
+            raise ValueError(f"Expected history shape [time, channels, beams], got {history_arr.shape}")
+        if history_arr.shape[0] < self.context_len:
+            return np.zeros(self.beam_count, dtype=np.float32)
+
+        context = history_arr[-self.context_len :]
+        model_input = np.transpose(context, (1, 0, 2))[None, :, :, :]
+        with torch.no_grad():
+            logits = self.model(torch.from_numpy(model_input).to(self.device))
+        return logits.detach().cpu().numpy().reshape(-1).astype(np.float32, copy=False)
+
+    def predict_current_obstacle_mask_from_feature_history_with_bias(
+        self,
+        history: np.ndarray,
+        obstacle_logit_bias: float = DEFAULT_OBSTACLE_LOGIT_BIAS,
+    ) -> np.ndarray:
+        logits = self.predict_current_obstacle_logits_from_feature_history(history)
+        logits = logits + float(obstacle_logit_bias)
+        probs = 1.0 / (1.0 + np.exp(-logits))
+        return probs >= self.threshold
+
+
+def _sanitize_cnn_lidar(distances_cm: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    valid = (distances_cm > 0.0) & np.isfinite(distances_cm) & (distances_cm <= CNN_MAX_LIDAR_CM)
+    clipped = np.where(valid, np.clip(distances_cm, 0.0, CNN_MAX_LIDAR_CM), 0.0).astype(np.float32)
+    normalized = np.log1p(clipped) / np.log1p(CNN_MAX_LIDAR_CM)
+    return normalized.astype(np.float32, copy=False), valid.astype(np.float32, copy=False)
+
+
+def _heading_deg_from_basis(basis: np.ndarray | None) -> float:
+    if basis is None:
+        return 0.0
+    basis_arr = np.asarray(basis, dtype=np.float32).reshape(3, 3)
+    return float(math.degrees(math.atan2(float(basis_arr[1, 0]), float(basis_arr[0, 0]))))
+
+
 def _active_checkpoint_path() -> Path:
-    return SIMPLE_CHECKPOINT_PATH if USE_SIMPLE_MODEL else LEGACY_CHECKPOINT_PATH
+    if _ACTIVE_BACKEND == INFERENCE_BACKEND_BUNDLE_CNN:
+        return BUNDLE_CHECKPOINT_PATH
+    if _ACTIVE_BACKEND == INFERENCE_BACKEND_SIMPLE_TRANSFORMER:
+        return SIMPLE_CHECKPOINT_PATH
+    return LEGACY_CHECKPOINT_PATH
 
 
-def _load_external_simpletrain_module():
-    if not EXTERNAL_SIMPLETRAIN_PATH.exists():
-        raise FileNotFoundError(f"Simple model loader not found: {EXTERNAL_SIMPLETRAIN_PATH}")
-    spec = importlib.util.spec_from_file_location("_external_simpletrain", EXTERNAL_SIMPLETRAIN_PATH)
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Failed to create import spec for {EXTERNAL_SIMPLETRAIN_PATH}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+def _bundle_assets_available() -> bool:
+    return BUNDLE_CHECKPOINT_PATH.exists() and BUNDLE_METADATA_PATH.exists()
 
 
 def _load_pose_aligned_transformer_inferencer(checkpoint_path: Path) -> GRULidarInferencer:
-    if any(value is None for value in (GRULidarInferencer, NormStats, load_checkpoint_for_device, load_model_state_with_compat, select_runtime_device)):
+    if any(
+        value is None
+        for value in (
+            GRULidarInferencer,
+            NormStats,
+            load_checkpoint_for_device,
+            load_model_state_with_compat,
+            select_runtime_device,
+        )
+    ):
         raise RuntimeError("Local train.py helpers are unavailable for simple-model inference.")
 
-    simpletrain = _load_external_simpletrain_module()
-    PoseAlignedBeamTransformerClassifier = simpletrain.PoseAlignedBeamTransformerClassifier
+    import importlib.util
+
+    external_simpletrain_path = REPO_DIR.parent / "lidarmodeltesting" / "simpletrain.py"
+    if not external_simpletrain_path.exists():
+        raise FileNotFoundError(f"Simple model loader not found: {external_simpletrain_path}")
+    spec = importlib.util.spec_from_file_location("_external_simpletrain", external_simpletrain_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Failed to create import spec for {external_simpletrain_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    PoseAlignedBeamTransformerClassifier = module.PoseAlignedBeamTransformerClassifier
     device_t, device_kind = select_runtime_device("auto")
     ckpt = load_checkpoint_for_device(checkpoint_path, device_t, device_kind)
     cfg = dict(ckpt["model_config"])
@@ -100,21 +352,74 @@ def _load_pose_aligned_transformer_inferencer(checkpoint_path: Path) -> GRULidar
     )
 
 
+def _build_bundle_cnn_model(meta: dict[str, object], in_channels: int) -> nn.Module:
+    cfg = dict(meta["model_config"])
+    model_type = str(cfg["model_type"])
+    widths = tuple(int(value) for value in cfg["widths"])
+    kernel_t = int(cfg["kernel_t"])
+    kernel_b = int(cfg["kernel_b"])
+    dropout = float(cfg["dropout"])
+    if model_type == "plain":
+        return BeamTemporalCNN(
+            in_channels=in_channels,
+            widths=widths,
+            kernel_t=kernel_t,
+            kernel_b=kernel_b,
+            dropout=dropout,
+        )
+    return ResidualBeamCNN(
+        in_channels=in_channels,
+        width=int(widths[0]),
+        depth=len(widths),
+        kernel_t=kernel_t,
+        kernel_b=kernel_b,
+        dropout=dropout,
+    )
+
+
+def _load_bundle_cnn_inferencer() -> BundleCnnInferencer:
+    if torch is None or nn is None:
+        raise RuntimeError("PyTorch is unavailable for bundle CNN inference.")
+
+    meta = json.loads(BUNDLE_METADATA_PATH.read_text(encoding="utf-8"))
+    beam_count = int(meta["feature_schema"]["num_beams"])
+    feature_channels = 2 + 3 + 4 + 3 + 1
+    context_len = int(meta["model_config"]["context_len"])
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    checkpoint = torch.load(BUNDLE_CHECKPOINT_PATH, map_location=device)
+    model = _build_bundle_cnn_model(meta, in_channels=feature_channels).to(device)
+    model.load_state_dict(checkpoint["state_dict"])
+    model.eval()
+    return BundleCnnInferencer(
+        model=model,
+        device=device,
+        threshold=float(meta["recommended_threshold"]),
+        context_len=context_len,
+        beam_count=beam_count,
+    )
+
+
 def _load_inferencer():
     checkpoint_path = _active_checkpoint_path()
-    if USE_SIMPLE_MODEL:
+    if _ACTIVE_BACKEND == INFERENCE_BACKEND_BUNDLE_CNN:
+        return _load_bundle_cnn_inferencer()
+    if _ACTIVE_BACKEND == INFERENCE_BACKEND_SIMPLE_TRANSFORMER:
         return _load_pose_aligned_transformer_inferencer(checkpoint_path)
     if load_gru_lidar_inferencer is None:
         raise RuntimeError("Local GRU loader is unavailable.")
     return load_gru_lidar_inferencer(checkpoint_path, max_history=MAX_HISTORY)
 
 
-def configure_inference(use_simple_model: bool = False) -> None:
-    global USE_SIMPLE_MODEL, _INFERENCER
-    requested = bool(use_simple_model)
-    if USE_SIMPLE_MODEL == requested and (_INFERENCER is not None or not _FEATURE_HISTORY):
+def configure_inference(use_simple_model: bool = False, backend: str | None = None) -> None:
+    global _ACTIVE_BACKEND, _INFERENCER
+    requested_backend = backend
+    if requested_backend is None:
+        requested_backend = INFERENCE_BACKEND_SIMPLE_TRANSFORMER if use_simple_model else INFERENCE_BACKEND_LEGACY_GRU
+    if requested_backend not in VALID_INFERENCE_BACKENDS:
+        raise ValueError(f"Unsupported inference backend: {requested_backend}")
+    if _ACTIVE_BACKEND == requested_backend and (_INFERENCER is not None or not _FEATURE_HISTORY):
         return
-    USE_SIMPLE_MODEL = requested
+    _ACTIVE_BACKEND = requested_backend
     _INFERENCER = None
     reset_history()
 
@@ -124,7 +429,10 @@ def _ensure_inferencer_loaded() -> None:
     if _INFERENCER is not None:
         return
     checkpoint_path = _active_checkpoint_path()
-    if not checkpoint_path.exists():
+    if _ACTIVE_BACKEND == INFERENCE_BACKEND_BUNDLE_CNN:
+        if not _bundle_assets_available():
+            return
+    elif not checkpoint_path.exists():
         return
     try:
         _INFERENCER = _load_inferencer()
@@ -136,13 +444,17 @@ def inferencer_backend() -> str:
     _ensure_inferencer_loaded()
     checkpoint_path = _active_checkpoint_path()
     if _INFERENCER is not None:
-        if USE_SIMPLE_MODEL:
+        if _ACTIVE_BACKEND == INFERENCE_BACKEND_BUNDLE_CNN:
+            return f"bundle_cnn_loaded:{checkpoint_path.name}"
+        if _ACTIVE_BACKEND == INFERENCE_BACKEND_SIMPLE_TRANSFORMER:
             return f"simple_pt_loaded:{checkpoint_path.name}"
         return "gru_pt_loaded:local_train_py"
-    if checkpoint_path.exists() and not USE_SIMPLE_MODEL and load_gru_lidar_inferencer is None:
+    if _ACTIVE_BACKEND == INFERENCE_BACKEND_BUNDLE_CNN:
+        return "fallback_bundle_assets_missing" if not _bundle_assets_available() else "fallback_bundle_inferencer_unavailable"
+    if checkpoint_path.exists() and _ACTIVE_BACKEND == INFERENCE_BACKEND_LEGACY_GRU and load_gru_lidar_inferencer is None:
         return "fallback_no_local_train_loader"
     if checkpoint_path.exists():
-        if USE_SIMPLE_MODEL:
+        if _ACTIVE_BACKEND == INFERENCE_BACKEND_SIMPLE_TRANSFORMER:
             return "fallback_simple_inferencer_unavailable"
         return "fallback_inferencer_unavailable"
     return "fallback_no_checkpoint"
@@ -151,6 +463,8 @@ def inferencer_backend() -> str:
 def reset_history() -> None:
     _FEATURE_HISTORY.clear()
     _SIGNATURE_HISTORY.clear()
+    if _INFERENCER is not None and hasattr(_INFERENCER, "reset"):
+        _INFERENCER.reset()
 
 
 def _build_history_signature(

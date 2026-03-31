@@ -1,0 +1,62 @@
+created_utc=2026-03-29T16:59:00Z
+model_backend=bundle_cnn_loaded:best_model_checkpoint.pt
+pose_units_to_cm=100.0
+grid_cell_size_cm=50.0
+path_target_lookahead_cm=500.0
+max_forward_throttle=18.0
+min_forward_throttle=18.0
+recovery_reverse_throttle=-85.0
+recovery_reverse_seconds=8
+recovery_brake_seconds=5
+stationary_timeout_sec=5
+startup_stuck_grace_sec=5.0
+stationary_move_threshold_cm=25.0
+stationary_speed_threshold=0.25
+path_direction_lookahead_cm=120.0
+path_reverse_engage_heading_deg=125.0
+path_reverse_release_heading_deg=75.0
+model_history_min_delta=5.0
+model_history_min_frames=6
+ignore_backward_facing_lidar_classifications=1
+backward_facing_lidar_yaw_threshold_deg=90.0
+min_lidar_reading_cm=150.0
+lidar_obstacle_evidence_delta=1.35
+lidar_clear_evidence_delta=-0.35
+lidar_clearance_cost_delta=1.0
+lidar_obstacle_proximity_gain=1.5
+lidar_obstacle_evidence_block_size_cm=450.0
+lidar_obstacle_evidence_edge_gain=0.55
+path_evidence_cost_scale=2
+path_clearance_cost_scale=1.25
+path_evidence_min_value=-3.0
+path_evidence_max_value=8.0
+path_clearance_min_value=0.0
+path_clearance_max_value=12.0
+lidar_max_range_cm=1000.0
+grid_origin_x_cm=-5470.019500000053
+grid_origin_y_cm=-3459.9610000000102
+grid_width_cells=129
+grid_height_cells=129
+obstacle_padding_cells=9
+start_x_cm=-270.020
+start_y_cm=1740.039
+goal_x_cm=-4270.020
+goal_y_cm=-2259.961
+sensor_layout_idx	sensor_x_cm	sensor_y_cm	sensor_yaw_deg	sensor_pitch_deg
+0	250.000	245.000	30.000	0.000
+1	325.000	75.000	20.000	-20.000
+2	325.000	0.000	0.000	0.000
+3	325.000	-75.000	-20.000	-20.000
+4	250.000	-245.000	-30.000	0.000
+5	325.000	75.000	0.000	-25.000
+6	325.000	-75.000	0.000	-25.000
+7	40.000	235.000	90.000	-20.000
+8	40.000	-235.000	-90.000	-20.000
+9	-215.000	270.000	140.000	0.000
+10	-320.000	80.000	180.000	0.000
+11	-320.000	-50.000	180.000	0.000
+12	-215.000	-215.000	-140.000	0.000
+13	325.000	75.000	20.000	-10.000
+14	325.000	-75.000	-20.000	-10.000
+15	250.000	245.000	15.000	0.000
+16	250.000	-245.000	-15.000	0.000

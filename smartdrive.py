@@ -17,7 +17,6 @@ from dumbdrive import (
     STATIONARY_TIMEOUT_SEC,
     STUCK_HISTORY_FRAMES,
     compute_recovery_reverse_steering,
-    detect_stuck_contact_sides,
     mark_stuck_obstacles_from_history,
     planner_needs_rebuild,
     rebuild_planner_with_obstacles,
@@ -62,7 +61,13 @@ from main import (
     stop_rover,
     update_obstacles_from_lidar,
 )
-from model import configure_inference, inferencer_backend, ingest_lidar, reset_history
+from model import (
+    INFERENCE_BACKEND_BUNDLE_CNN,
+    configure_inference,
+    inferencer_backend,
+    ingest_lidar,
+    reset_history,
+)
 from rover_control import (
     close_rover_socket,
     fetch_rover_telemetry,
@@ -74,16 +79,16 @@ from rover_control import (
 )
 
 
-MAX_FORWARD_THROTTLE = 150.0
+MAX_FORWARD_THROTTLE = 18.0
 MIN_FORWARD_THROTTLE = 18.0
 PATH_DIRECTION_LOOKAHEAD_CM = 120.0
 # Temporary conservative reverse thresholds while close-range clearance is inflated.
 # Wider hysteresis gap makes direction choice stickier once engaged.
 PATH_REVERSE_ENGAGE_HEADING_DEG = 125.0
 PATH_REVERSE_RELEASE_HEADING_DEG = 75.0
-MODEL_HISTORY_MIN_DELTA = 5.0
-MODEL_HISTORY_MIN_FRAMES = 6
-USE_SIMPLE_MODEL_INFERENCE = False
+MODEL_HISTORY_MIN_DELTA = 0.0
+MODEL_HISTORY_MIN_FRAMES = 4
+MODEL_INFERENCE_BACKEND = INFERENCE_BACKEND_BUNDLE_CNN
 IGNORE_BACKWARD_FACING_LIDAR_CLASSIFICATIONS = True
 BACKWARD_FACING_LIDAR_YAW_THRESHOLD_DEG = 90.0
 MIN_LIDAR_READING_CM = 150.0
@@ -605,7 +610,7 @@ def main() -> None:
         if not wait_for_dust(sock, timeout_seconds=20.0, poll_seconds=0.5):
             raise RuntimeError("DUST is not connected to TSS.")
 
-        configure_inference(use_simple_model=USE_SIMPLE_MODEL_INFERENCE)
+        configure_inference(backend=MODEL_INFERENCE_BACKEND)
         reset_history()
         telemetry = fetch_rover_telemetry(sock)
         initial_x, initial_y, _, _ = parse_pose(telemetry)
@@ -780,7 +785,6 @@ def main() -> None:
                         planner,
                         pose_history,
                         (x, y, z, heading),
-                        detect_stuck_contact_sides(lidar_cm),
                         debug_rows=stuck_rows,
                     )
                     if stuck_added > 0:

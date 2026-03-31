@@ -1,0 +1,1 @@
+step_idx	elapsed_s	sensor_idx	sensor_label	raw_cm	mask_hit	sensor_world_x_cm	sensor_world_y_cm	sensor_cell_x	sensor_cell_y	rover_x_cm	rover_y_cm	rover_heading_deg

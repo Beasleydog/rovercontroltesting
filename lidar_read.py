@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import csv
 import ctypes
+import json
 import time
-from datetime import datetime
 from pathlib import Path
 
+from main import LIDAR_SENSOR_LABELS, LIDAR_SENSOR_LAYOUT
 from rover_control import (
     close_rover_socket,
-    fetch_rover_telemetry,
+    fetch_rover_json,
     open_rover_socket,
     set_brakes,
     set_steering,
@@ -17,29 +18,18 @@ from rover_control import (
 )
 
 
-RUNS_DIR = Path("runs")
+CLEAN_LOG_ROOT = Path("cleanlog")
 POLL_HZ = 20.0
 MAX_THROTTLE = 100.0
 MAX_STEERING = 1.0
-LIDAR_SENSOR_COUNT = 17
-LIDAR_SENSOR_LABELS = [
-    "front_left_wheel_hub_yaw_p30",
-    "front_left_frame_yaw_p20_pitch_n20",
-    "front_center_frame_forward",
-    "front_right_frame_yaw_n20_pitch_n20",
-    "front_right_wheel_hub_yaw_n30",
-    "front_left_frame_pitch_n25",
-    "front_right_frame_pitch_n25",
-    "left_mid_frame_left_pitch_n20",
-    "right_mid_frame_right_pitch_n20",
-    "rear_left_wheel_hub_back_yaw_p40",
-    "rear_left_frame_backward",
-    "rear_right_frame_backward",
-    "rear_right_wheel_hub_back_yaw_n40",
-    "front_left_frame_yaw_p20_pitch_n10",
-    "front_right_frame_yaw_n20_pitch_n10",
-    "front_left_wheel_hub_yaw_p15",
-    "front_right_wheel_hub_yaw_n15",
+LIDAR_SENSOR_COUNT = len(LIDAR_SENSOR_LAYOUT)
+RAW_TSS_TELEMETRY_FIELDS = [
+    "rover_pos_x",
+    "rover_pos_y",
+    "rover_pos_z",
+    "heading",
+    "pitch",
+    "roll",
 ]
 LIDAR_GROUPS = {
     "front": [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16],
@@ -149,8 +139,8 @@ def desired_drive_state() -> tuple[float, float, bool]:
     return (throttle, steering, exit_requested)
 
 
-def lidar_values_cm(telemetry: dict) -> list[float]:
-    lidar = telemetry.get("lidar")
+def lidar_values_cm(raw_telemetry: dict) -> list[float]:
+    lidar = raw_telemetry.get("lidar")
     values = [-1.0] * LIDAR_SENSOR_COUNT
     if not isinstance(lidar, list):
         return values
@@ -178,9 +168,27 @@ def console_lines_for_values(values_cm: list[float]) -> list[str]:
 
 
 def make_log_path() -> Path:
-    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    CLEAN_LOG_ROOT.mkdir(parents=True, exist_ok=True)
     timestamp = time.strftime("%Y%m%d_%H%M%S")
-    return RUNS_DIR / f"lidar_read_{timestamp}.csv"
+    return CLEAN_LOG_ROOT / f"lidar_read_{timestamp}.csv"
+
+
+def cleanlog_header() -> list[str]:
+    lidar_columns: list[str] = []
+    for sensor_idx, (_, _, sensor_yaw_deg, sensor_pitch_deg) in enumerate(LIDAR_SENSOR_LAYOUT):
+        sensor_label = (
+            LIDAR_SENSOR_LABELS[sensor_idx]
+            if sensor_idx < len(LIDAR_SENSOR_LABELS)
+            else f"sensor_{sensor_idx:02d}"
+        )
+        lidar_columns.append(
+            f"lidar_{sensor_idx:02d}_{sensor_label}_yaw_{sensor_yaw_deg:g}_pitch_{sensor_pitch_deg:g}_cm"
+        )
+    return ["iso_time_utc", "elapsed_s", "step_idx", *RAW_TSS_TELEMETRY_FIELDS, *lidar_columns]
+
+
+def fmt_raw(value) -> str:
+    return json.dumps(value, separators=(",", ":"))
 
 
 def run_test() -> None:
@@ -205,20 +213,7 @@ def run_test() -> None:
 
         with log_path.open("w", encoding="utf-8", newline="") as fh:
             writer = csv.writer(fh)
-            writer.writerow(
-                [
-                    "elapsed_s",
-                    "step_idx",
-                    "iso_time",
-                    "throttle_cmd",
-                    "steering_cmd",
-                    "brakes_cmd",
-                    *[f"lidar_{sensor_idx:02d}_cm" for sensor_idx in range(LIDAR_SENSOR_COUNT)],
-                    "telemetry_throttle",
-                    "telemetry_steering",
-                    "telemetry_speed",
-                ]
-            )
+            writer.writerow(cleanlog_header())
 
             while True:
                 throttle_cmd, steering_cmd, exit_requested = desired_drive_state()
@@ -234,28 +229,20 @@ def run_test() -> None:
                     set_brakes(sock, brakes_cmd)
                     last_brakes = brakes_cmd
 
-                telemetry = fetch_rover_telemetry(sock)
-                values_cm = lidar_values_cm(telemetry)
+                rover_json = fetch_rover_json(sock)
+                raw_telemetry = rover_json.get("pr_telemetry")
+                if not isinstance(raw_telemetry, dict):
+                    raise RuntimeError("ROVER.json did not contain pr_telemetry")
+                values_cm = lidar_values_cm(raw_telemetry)
                 elapsed_s = time.monotonic() - start_time
-                iso_time = datetime.now().isoformat(timespec="milliseconds")
-                telemetry_throttle = float(telemetry.get("throttle", 0.0))
-                telemetry_steering = float(telemetry.get("steering", 0.0))
-                telemetry_speed = float(telemetry.get("speed", 0.0))
-
-                writer.writerow(
-                    [
-                        f"{elapsed_s:.3f}",
-                        step_idx,
-                        iso_time,
-                        f"{throttle_cmd:.3f}",
-                        f"{steering_cmd:.3f}",
-                        int(brakes_cmd),
-                        *[f"{value:.3f}" for value in values_cm],
-                        f"{telemetry_throttle:.3f}",
-                        f"{telemetry_steering:.3f}",
-                        f"{telemetry_speed:.3f}",
-                    ]
-                )
+                row = [
+                    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    f"{elapsed_s:.3f}",
+                    str(step_idx),
+                ]
+                row.extend(fmt_raw(raw_telemetry.get(field)) for field in RAW_TSS_TELEMETRY_FIELDS)
+                row.extend(fmt_raw(value) for value in values_cm)
+                writer.writerow(row)
                 fh.flush()
 
                 console_lines = console_lines_for_values(values_cm)

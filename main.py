@@ -847,15 +847,23 @@ class MapWindow:
             pygame.draw.lines(self.screen, PATH_COLOR, False, path_points, width=3)
 
         for row in lidar_debug_rows or []:
-            if not bool(row["valid_range_ge0"]):
-                continue
             start_x = float(row["sensor_world_x_cm"])
             start_y = float(row["sensor_world_y_cm"])
-            hit_x = float(row["ray_hit_world_x_cm"])
-            hit_y = float(row["ray_hit_world_y_cm"])
+            raw_cm = float(row["raw_cm"])
+            if raw_cm < 0.0:
+                sensor_yaw_deg = float(row["sensor_yaw_deg"])
+                ray_heading_rad = math.radians(heading_deg + sensor_yaw_deg)
+                hit_x = start_x + float(LIDAR_MAX_RANGE_CM) * math.cos(ray_heading_rad)
+                hit_y = start_y + float(LIDAR_MAX_RANGE_CM) * math.sin(ray_heading_rad)
+                hit_color = (185, 185, 185)
+            else:
+                if not bool(row["valid_range_ge0"]):
+                    continue
+                hit_x = float(row["ray_hit_world_x_cm"])
+                hit_y = float(row["ray_hit_world_y_cm"])
+                hit_color = LIDAR_HIT_COLOR if bool(row["mask_hit"]) else PATH_COLOR
             start_px = self._world_to_screen(planner, start_x, start_y)
             hit_px = self._world_to_screen(planner, hit_x, hit_y)
-            hit_color = LIDAR_HIT_COLOR if bool(row["mask_hit"]) else lidar_map_hit_line_color(float(row["raw_cm"]))
             pygame.draw.line(self.screen, hit_color, start_px, hit_px, width=2)
 
         gx, gy = self._world_to_screen(planner, goal_xy[0], goal_xy[1])
@@ -888,8 +896,10 @@ class MapWindow:
             "Green dot: Goal",
             "Orange dot: Current target",
             "Blue line: Planned path",
-            "Blue heat: repeated clear-space evidence",
+            "Blue lidar rays: classified clear",
             "Orange heat: clearance halo / keep-out cost",
+            "Red lidar rays: classified obstacle",
+            "Blue heat: repeated clear-space evidence",
             "Red heat: exact obstacle confidence",
             "Red cells: Obstacles",
             "Gold cells: low-clearance hits",

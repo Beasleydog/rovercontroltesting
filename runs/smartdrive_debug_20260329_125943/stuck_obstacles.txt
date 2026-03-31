@@ -1,0 +1,1 @@
+step_idx	elapsed_s	stuck_x_cm	stuck_y_cm	stuck_z_cm	hist_x_cm	hist_y_cm	hist_z_cm	hist_heading_deg	dist_from_stuck_cm	contact_side	contact_min_lidar_cm	bumper_sample_idx	bumper_lateral_offset_cm	obstacle_x_cm	obstacle_y_cm	obstacle_cell_x	obstacle_cell_y	placed

@@ -1,0 +1,67 @@
+{
+  "model_name": "base_ctx4_focal_pw15",
+  "recommended_threshold": 0.7500000000000002,
+  "model_config": {
+    "name": "base_ctx4_focal_pw15",
+    "context_len": 4,
+    "model_type": "residual",
+    "widths": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "kernel_t": 5,
+    "kernel_b": 3,
+    "dropout": 0.1,
+    "loss_type": "focal",
+    "focal_gamma": 1.5,
+    "pos_weight_scale": 1.5,
+    "lidar_noise_std": 0.0,
+    "beam_dropout": 0.0,
+    "timestep_dropout": 0.0,
+    "epochs": 8,
+    "patience": 2,
+    "batch_size": 256,
+    "lr": 0.001,
+    "weight_decay": 0.0001
+  },
+  "training_note": "checkpoint exported after retraining the lockbox-selected winner on development files with a held-out calibration split for early stopping and threshold selection",
+  "lockbox_result_reference": {
+    "accuracy": 0.9608047527558626,
+    "tp_obstacle": 4419,
+    "tn_non_obstacle": 136606,
+    "fp_obstacle": 2455,
+    "fn_obstacle": 3298,
+    "precision_obstacle": 0.6428571428571429,
+    "recall_obstacle": 0.5726318517558637,
+    "f1_obstacle": 0.6057158522376808,
+    "precision_non_obstacle": 0.976426692589204,
+    "recall_non_obstacle": 0.9823458769892349,
+    "f1_non_obstacle": 0.9793773412435253,
+    "positive_rate_pred": 0.04683263227343559,
+    "positive_rate_true": 0.05257599800825119,
+    "threshold": 0.7500000000000002,
+    "fpr_non_obstacle": 0.01765412301076506,
+    "fnr_obstacle": 0.4273681482441363
+  },
+  "bundle_created_from": {
+    "lockbox_protocol": "reports/lockbox_search/protocol.json",
+    "lockbox_results": "reports/lockbox_search/lockbox_results.json",
+    "cv_results": "reports/lockbox_search/cv_results.json"
+  },
+  "feature_schema": {
+    "inputs": [
+      "sanitized log-scaled lidar distances",
+      "validity mask",
+      "scaled rover xyz",
+      "heading sin/cos",
+      "pitch",
+      "roll",
+      "xyz deltas",
+      "beam index"
+    ],
+    "num_beams": 17,
+    "context_len": 4
+  }
+}
