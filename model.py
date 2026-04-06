@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import io
 import json
 import math
+import re
+import time
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -37,6 +41,13 @@ REPO_DIR = Path(__file__).resolve().parent
 RUNS_DIR = REPO_DIR / "runs"
 SIMPLE_RUNS_DIR = REPO_DIR / "simpleruns"
 BUNDLE_DIR = REPO_DIR / "lidar_model_bundle"
+MASSIVE_PACKAGE_ZIP_PATH = REPO_DIR / "lidar_model_package_massive_improvements.zip"
+MASSIVE_PACKAGE_CHECKPOINT_MEMBER = (
+    "lidar_model_package_massive_improvements/best_models/bev_query_decoder_best.pt"
+)
+MASSIVE_PACKAGE_SUMMARY_MEMBER = (
+    "lidar_model_package_massive_improvements/summaries/bev_query_fast/summary.json"
+)
 
 LEGACY_CHECKPOINT_PATH = RUNS_DIR / "gru_lidar_classifier.pt"
 SIMPLE_CHECKPOINT_PATH = SIMPLE_RUNS_DIR / "pose_aligned_beam_transformer.pt"
@@ -71,6 +82,36 @@ _ACTIVE_BACKEND = FALLBACK_MODEL_BACKEND
 
 _FEATURE_HISTORY: list[np.ndarray] = []
 _SIGNATURE_HISTORY: list[np.ndarray] = []
+
+
+def _parse_angle_token(value: str) -> float:
+    if value.startswith("p"):
+        return float(value[1:])
+    if value.startswith("n"):
+        return -float(value[1:])
+    return float(value)
+
+
+def _parse_beam_angles(beam_names: list[str]) -> np.ndarray:
+    yaw_re = re.compile(r"yaw_([pn]?\d+|-?\d+)")
+    pitch_re = re.compile(r"pitch_([pn]?\d+|-?\d+)")
+    directions: list[list[float]] = []
+    for name in beam_names:
+        yaw_tokens = yaw_re.findall(name)
+        pitch_tokens = pitch_re.findall(name)
+        if not yaw_tokens or not pitch_tokens:
+            raise ValueError(f"Could not parse beam yaw/pitch from {name!r}")
+        yaw_rad = math.radians(_parse_angle_token(yaw_tokens[-1]))
+        pitch_rad = math.radians(_parse_angle_token(pitch_tokens[-1]))
+        cos_pitch = math.cos(pitch_rad)
+        directions.append(
+            [
+                cos_pitch * math.cos(yaw_rad),
+                cos_pitch * math.sin(yaw_rad),
+                math.sin(pitch_rad),
+            ]
+        )
+    return np.asarray(directions, dtype=np.float32)
 
 
 class ResidualBlock2D(nn.Module):
@@ -173,6 +214,93 @@ class BeamTemporalCNN(nn.Module):
         return self.head(current).squeeze(1)
 
 
+class BestPackageCrossAttentionBlock(nn.Module):
+    def __init__(self, width: int, num_heads: int, dropout: float) -> None:
+        super().__init__()
+        self.query_norm = nn.LayerNorm(width)
+        self.memory_norm = nn.LayerNorm(width)
+        self.attn = nn.MultiheadAttention(width, num_heads=num_heads, dropout=dropout, batch_first=True)
+        self.mlp = nn.Sequential(
+            nn.LayerNorm(width),
+            nn.Linear(width, width * 4),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(width * 4, width),
+        )
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, query: torch.Tensor, memory: torch.Tensor) -> torch.Tensor:
+        attended, _ = self.attn(
+            self.query_norm(query),
+            self.memory_norm(memory),
+            self.memory_norm(memory),
+            need_weights=False,
+        )
+        query = query + self.dropout(attended)
+        return query + self.dropout(self.mlp(query))
+
+
+class BestPackageBevQueryDecoder(nn.Module):
+    def __init__(self, in_channels: int, width: int, depth: int, dropout: float, num_beams: int, bev_channels: int) -> None:
+        super().__init__()
+        bev_width = width // 2
+        bev_groups = max(1, bev_width // 16)
+        layers: list[nn.Module] = [
+            nn.Conv2d(bev_channels, bev_width, kernel_size=3, padding=1, bias=False),
+            nn.GroupNorm(max(1, bev_groups), bev_width),
+            nn.SiLU(),
+        ]
+        for _ in range(depth):
+            layers.extend(
+                [
+                    nn.Conv2d(bev_width, bev_width, kernel_size=3, padding=1, bias=False),
+                    nn.GroupNorm(max(1, bev_groups), bev_width),
+                    nn.SiLU(),
+                ]
+            )
+        self.bev_encoder = nn.Sequential(*layers)
+        self.token_proj = nn.Sequential(
+            nn.Linear(in_channels, width),
+            nn.LayerNorm(width),
+            nn.GELU(),
+        )
+        self.query_proj = nn.Sequential(
+            nn.Linear(in_channels, width),
+            nn.LayerNorm(width),
+            nn.GELU(),
+        )
+        self.beam_embed = nn.Parameter(torch.randn(1, num_beams, width) * 0.02)
+        self.blocks = nn.ModuleList(
+            [
+                BestPackageCrossAttentionBlock(
+                    width=width,
+                    num_heads=max(1, min(8, width // 16)),
+                    dropout=dropout,
+                )
+                for _ in range(depth)
+            ]
+        )
+        self.memory_proj = nn.Linear(bev_width, width)
+        self.head = nn.Sequential(
+            nn.LayerNorm(width * 2),
+            nn.Linear(width * 2, width),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(width, 1),
+        )
+
+    def forward(self, x: torch.Tensor, bev: torch.Tensor) -> torch.Tensor:
+        batch_size, channels, history, beam_count = x.shape
+        token_memory = self.token_proj(x.permute(0, 2, 3, 1).reshape(batch_size, history * beam_count, channels))
+        bev_memory = self.memory_proj(self.bev_encoder(bev).flatten(2).transpose(1, 2))
+        memory = torch.cat([token_memory, bev_memory], dim=1)
+        query = self.query_proj(x[:, :, -1, :].permute(0, 2, 1)) + self.beam_embed[:, :beam_count, :]
+        for block in self.blocks:
+            query = block(query, memory)
+        scene = memory.mean(dim=1, keepdim=True).expand(-1, beam_count, -1)
+        return self.head(torch.cat([query, scene], dim=-1)).squeeze(-1)
+
+
 class BundleCnnInferencer:
     binary_obstacle_only = True
 
@@ -263,6 +391,176 @@ class BundleCnnInferencer:
         return probs >= self.threshold
 
 
+class BestPackageInferencer:
+    binary_obstacle_only = True
+
+    def __init__(
+        self,
+        model: nn.Module,
+        device: torch.device,
+        threshold: float,
+        context_len: int,
+        beam_names: list[str],
+        bev_extent_xy: float = 2000.0,
+        bev_extent_z: float = 250.0,
+        bev_size: int = 32,
+    ) -> None:
+        self.model = model
+        self.device = device
+        self.threshold = float(threshold)
+        self.context_len = int(context_len)
+        self.beam_names = list(beam_names)
+        self.beam_count = len(self.beam_names)
+        self.beam_dirs = _parse_beam_angles(self.beam_names)
+        self.max_history = max(0, self.context_len - 1)
+        self.bev_extent_xy = float(bev_extent_xy)
+        self.bev_extent_z = float(bev_extent_z)
+        self.bev_size = int(bev_size)
+
+    def reset(self) -> None:
+        return None
+
+    def featurize_timestep(
+        self,
+        pose_xyz_cm: np.ndarray,
+        lidar_cm: np.ndarray,
+        basis: np.ndarray | None = None,
+    ) -> np.ndarray:
+        pose_arr = np.asarray(pose_xyz_cm, dtype=np.float32).reshape(3)
+        lidar_arr = np.asarray(lidar_cm, dtype=np.float32).reshape(self.beam_count)
+        basis_arr = np.eye(3, dtype=np.float32) if basis is None else np.asarray(basis, dtype=np.float32).reshape(3, 3)
+        timestamp = np.asarray([time.monotonic()], dtype=np.float32)
+        return np.concatenate([pose_arr, lidar_arr, basis_arr.reshape(-1), timestamp]).astype(np.float32, copy=False)
+
+    def _unpack_history(self, history: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        history_arr = np.asarray(history, dtype=np.float32)
+        pose = history_arr[:, :3]
+        lidar = history_arr[:, 3 : 3 + self.beam_count]
+        basis = history_arr[:, 3 + self.beam_count : 12 + self.beam_count].reshape(-1, 3, 3)
+        timestamps = history_arr[:, 12 + self.beam_count]
+        return pose, lidar, basis, timestamps
+
+    def _build_feature_tensor(self, history: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        pose, lidar, basis, timestamps = self._unpack_history(history[-self.context_len :])
+        valid = ((lidar > 0.0) & np.isfinite(lidar) & (lidar < 10000.0)).astype(np.float32)
+        ranges = np.where(valid > 0.0, lidar, 0.0).astype(np.float32)
+        local_points = ranges[..., None] * self.beam_dirs[None, :, :]
+        world = np.einsum("tij,tkj->tki", basis, local_points) + pose[:, None, :]
+        world *= valid[..., None]
+
+        current_pos = pose[-1]
+        current_basis_t = basis[-1].T.astype(np.float32, copy=False)
+        delta = world - current_pos[None, None, :]
+        current_local = np.einsum("ij,tkj->tki", current_basis_t, delta)
+
+        ego_translation_local = np.einsum("ij,tj->ti", current_basis_t, pose - current_pos[None, :])
+        ego_translation_local = np.repeat(ego_translation_local[:, None, :], self.beam_count, axis=1)
+
+        velocity = np.zeros_like(world, dtype=np.float32)
+        delta_time = np.maximum(np.diff(timestamps, prepend=timestamps[0]).astype(np.float32), 1e-3)
+        velocity[1:] = (world[1:] - world[:-1]) / delta_time[1:, None, None]
+        velocity *= valid[..., None]
+
+        history_len = ranges.shape[0]
+        age = np.linspace(-(history_len - 1), 0, history_len, dtype=np.float32)[:, None]
+        age = np.repeat(age / max(history_len - 1, 1), self.beam_count, axis=1)
+        features = np.concatenate(
+            [
+                world / np.array([10000.0, 10000.0, 100.0], dtype=np.float32),
+                delta / np.array([2000.0, 2000.0, 200.0], dtype=np.float32),
+                current_local / np.array([2000.0, 2000.0, 200.0], dtype=np.float32),
+                np.clip(velocity / np.array([500.0, 500.0, 50.0], dtype=np.float32), -5.0, 5.0),
+                valid[..., None],
+                np.clip(ranges[..., None] / 2000.0, -1.0, 1.0),
+                np.log1p(np.clip(ranges[..., None], 0.0, None)) / 8.0,
+                age[..., None],
+                np.repeat(self.beam_dirs[None, :, :], history_len, axis=0),
+                ego_translation_local / np.array([500.0, 500.0, 50.0], dtype=np.float32),
+            ],
+            axis=-1,
+        ).astype(np.float32, copy=False)
+        bev = self._make_bev(current_local=current_local, valid=valid, age=age[:, :1])
+        return np.transpose(features, (2, 0, 1)), bev
+
+    def _paint_free_space(
+        self,
+        grid: np.ndarray,
+        ix: np.ndarray,
+        iy: np.ndarray,
+        valid: np.ndarray,
+        hit_weight: np.ndarray,
+    ) -> None:
+        center = self.bev_size // 2
+        for time_idx in range(ix.shape[0]):
+            for beam_idx in range(ix.shape[1]):
+                if valid[time_idx, beam_idx] <= 0.5:
+                    continue
+                x1 = int(ix[time_idx, beam_idx])
+                y1 = int(iy[time_idx, beam_idx])
+                steps = max(abs(x1 - center), abs(y1 - center))
+                if steps <= 1:
+                    continue
+                xs = np.rint(np.linspace(center, x1, steps, endpoint=False)).astype(np.int32)
+                ys = np.rint(np.linspace(center, y1, steps, endpoint=False)).astype(np.int32)
+                mask = (xs >= 0) & (xs < self.bev_size) & (ys >= 0) & (ys < self.bev_size)
+                if not np.any(mask):
+                    continue
+                np.add.at(grid[4], (ys[mask], xs[mask]), 1.0)
+                np.add.at(grid[5], (ys[mask], xs[mask]), float(hit_weight[time_idx, beam_idx]))
+
+    def _make_bev(self, current_local: np.ndarray, valid: np.ndarray, age: np.ndarray) -> np.ndarray:
+        grid = np.zeros((6, self.bev_size, self.bev_size), dtype=np.float32)
+        xy = current_local[..., :2]
+        z = current_local[..., 2]
+        scale = self.bev_size / (2.0 * self.bev_extent_xy)
+        ix = np.floor((xy[..., 0] + self.bev_extent_xy) * scale).astype(np.int32)
+        iy = np.floor((xy[..., 1] + self.bev_extent_xy) * scale).astype(np.int32)
+        mask = (
+            (valid > 0.5)
+            & (ix >= 0)
+            & (ix < self.bev_size)
+            & (iy >= 0)
+            & (iy < self.bev_size)
+        )
+        hit_weight = np.repeat((age + 1.0).astype(np.float32), current_local.shape[1], axis=1)
+        self._paint_free_space(grid, ix, iy, valid, hit_weight)
+        if not np.any(mask):
+            return grid
+        np.add.at(grid[0], (iy[mask], ix[mask]), 1.0)
+        np.add.at(grid[1], (iy[mask], ix[mask]), hit_weight[mask].reshape(-1))
+        # Training code appears to include a label-derived BEV channel. That signal is unavailable online.
+        np.add.at(grid[3], (iy[mask], ix[mask]), np.clip((z[mask] + self.bev_extent_z) / (2.0 * self.bev_extent_z), 0.0, 1.0))
+        grid[0] = np.log1p(grid[0]) / 3.0
+        grid[1] = grid[1] / max(current_local.shape[0], 1)
+        grid[3] = np.where(grid[0] > 0, grid[3] / np.maximum(grid[0] * 3.0, 1e-6), 0.0)
+        grid[4] = np.log1p(grid[4]) / 3.0
+        grid[5] = grid[5] / max(current_local.shape[0], 1)
+        return grid
+
+    def predict_current_obstacle_logits_from_feature_history(self, history: np.ndarray) -> np.ndarray:
+        history_arr = np.asarray(history, dtype=np.float32)
+        if history_arr.ndim != 2:
+            raise ValueError(f"Expected packed history shape [time, features], got {history_arr.shape}")
+        if history_arr.shape[0] < self.context_len:
+            return np.zeros(self.beam_count, dtype=np.float32)
+        x, bev = self._build_feature_tensor(history_arr)
+        model_x = torch.from_numpy(x[None, :, :, :]).to(self.device)
+        model_bev = torch.from_numpy(bev[None, :, :, :]).to(self.device)
+        with torch.no_grad():
+            logits = self.model(model_x, model_bev)
+        return logits.detach().cpu().numpy().reshape(-1).astype(np.float32, copy=False)
+
+    def predict_current_obstacle_mask_from_feature_history_with_bias(
+        self,
+        history: np.ndarray,
+        obstacle_logit_bias: float = DEFAULT_OBSTACLE_LOGIT_BIAS,
+    ) -> np.ndarray:
+        logits = self.predict_current_obstacle_logits_from_feature_history(history)
+        logits = logits + float(obstacle_logit_bias)
+        probs = 1.0 / (1.0 + np.exp(-logits))
+        return probs >= self.threshold
+
+
 def _sanitize_cnn_lidar(distances_cm: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     valid = (distances_cm > 0.0) & np.isfinite(distances_cm) & (distances_cm <= CNN_MAX_LIDAR_CM)
     clipped = np.where(valid, np.clip(distances_cm, 0.0, CNN_MAX_LIDAR_CM), 0.0).astype(np.float32)
@@ -279,14 +577,33 @@ def _heading_deg_from_basis(basis: np.ndarray | None) -> float:
 
 def _active_checkpoint_path() -> Path:
     if _ACTIVE_BACKEND == INFERENCE_BACKEND_BUNDLE_CNN:
-        return BUNDLE_CHECKPOINT_PATH
+        return MASSIVE_PACKAGE_ZIP_PATH if MASSIVE_PACKAGE_ZIP_PATH.exists() else BUNDLE_CHECKPOINT_PATH
     if _ACTIVE_BACKEND == INFERENCE_BACKEND_SIMPLE_TRANSFORMER:
         return SIMPLE_CHECKPOINT_PATH
     return LEGACY_CHECKPOINT_PATH
 
 
 def _bundle_assets_available() -> bool:
-    return BUNDLE_CHECKPOINT_PATH.exists() and BUNDLE_METADATA_PATH.exists()
+    return MASSIVE_PACKAGE_ZIP_PATH.exists() or (BUNDLE_CHECKPOINT_PATH.exists() and BUNDLE_METADATA_PATH.exists())
+
+
+def _load_massive_package_checkpoint_and_threshold() -> tuple[dict[str, object], float]:
+    with zipfile.ZipFile(MASSIVE_PACKAGE_ZIP_PATH) as archive:
+        checkpoint = torch.load(
+            io.BytesIO(archive.read(MASSIVE_PACKAGE_CHECKPOINT_MEMBER)),
+            map_location="cpu",
+        )
+        threshold = float(checkpoint.get("val_metrics", {}).get("valid_best_threshold", 0.5))
+        try:
+            summary = json.loads(archive.read(MASSIVE_PACKAGE_SUMMARY_MEMBER).decode("utf-8"))
+            for result in summary.get("results", []):
+                config = result.get("config", {})
+                if config.get("name") == "bev_query_decoder":
+                    threshold = float(result.get("locked_test", {}).get("valid_best_threshold", threshold))
+                    break
+        except Exception:
+            pass
+    return checkpoint, threshold
 
 
 def _load_pose_aligned_transformer_inferencer(checkpoint_path: Path) -> GRULidarInferencer:
@@ -381,6 +698,29 @@ def _load_bundle_cnn_inferencer() -> BundleCnnInferencer:
     if torch is None or nn is None:
         raise RuntimeError("PyTorch is unavailable for bundle CNN inference.")
 
+    if MASSIVE_PACKAGE_ZIP_PATH.exists():
+        checkpoint, threshold = _load_massive_package_checkpoint_and_threshold()
+        config = dict(checkpoint["config"])
+        beam_names = [str(name) for name in checkpoint["beam_names"]]
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = BestPackageBevQueryDecoder(
+            in_channels=int(checkpoint.get("in_channels", 22)),
+            width=int(config["width"]),
+            depth=int(config["depth"]),
+            dropout=float(config["dropout"]),
+            num_beams=len(beam_names),
+            bev_channels=int(checkpoint.get("bev_channels", 6)),
+        ).to(device)
+        model.load_state_dict(checkpoint["model_state"])
+        model.eval()
+        return BestPackageInferencer(
+            model=model,
+            device=device,
+            threshold=threshold,
+            context_len=int(config["history"]),
+            beam_names=beam_names,
+        )
+
     meta = json.loads(BUNDLE_METADATA_PATH.read_text(encoding="utf-8"))
     beam_count = int(meta["feature_schema"]["num_beams"])
     feature_channels = 2 + 3 + 4 + 3 + 1
@@ -445,6 +785,8 @@ def inferencer_backend() -> str:
     checkpoint_path = _active_checkpoint_path()
     if _INFERENCER is not None:
         if _ACTIVE_BACKEND == INFERENCE_BACKEND_BUNDLE_CNN:
+            if MASSIVE_PACKAGE_ZIP_PATH.exists():
+                return "best_package_loaded:bev_query_decoder_best.pt"
             return f"bundle_cnn_loaded:{checkpoint_path.name}"
         if _ACTIVE_BACKEND == INFERENCE_BACKEND_SIMPLE_TRANSFORMER:
             return f"simple_pt_loaded:{checkpoint_path.name}"
