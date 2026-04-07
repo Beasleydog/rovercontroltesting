@@ -12,6 +12,7 @@ from rover_control import (
     fetch_rover_json,
     open_rover_socket,
     set_brakes,
+    set_lights,
     set_steering,
     set_throttle,
     wait_for_dust,
@@ -210,6 +211,7 @@ def run_test() -> None:
 
         if not wait_for_dust(sock, timeout_seconds=20.0, poll_seconds=0.5):
             raise RuntimeError("DUST is not connected to TSS.")
+        set_lights(sock, True)
 
         with log_path.open("w", encoding="utf-8", newline="") as fh:
             writer = csv.writer(fh)

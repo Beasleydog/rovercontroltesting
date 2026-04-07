@@ -1,0 +1,2 @@
+iso_time_utc	mono_s	mode	event	step_idx	goal_x_cm	goal_y_cm	rover_x_cm	rover_y_cm	goal_dist_cm	status
+2026-04-06T22:47:19Z	1751900.517	dumblocate_drive_last_known	loop_tick	0	-17230.000	-36869.961	300.000	1179.980	41893.901	

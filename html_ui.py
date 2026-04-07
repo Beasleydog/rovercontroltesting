@@ -143,7 +143,8 @@ HTML_PAGE = """<!doctype html>
     }
 
     function updateSidebar(state) {
-      document.getElementById('goalLoc').textContent = `${state.goal_xy[0].toFixed(1)}, ${state.goal_xy[1].toFixed(1)} cm`;
+      const goalText = state.goal_label || `${state.goal_xy[0].toFixed(1)}, ${state.goal_xy[1].toFixed(1)} cm`;
+      document.getElementById('goalLoc').textContent = goalText;
       document.getElementById('roverLoc').textContent = `${state.raw_rover_xy[0].toFixed(1)}, ${state.raw_rover_xy[1].toFixed(1)}`;
       document.getElementById('roverHeading').textContent = `${state.heading_deg.toFixed(1)} deg`;
       document.getElementById('goalDist').textContent = fmtDist(state.goal_distance_cm);
@@ -604,10 +605,12 @@ class HtmlCanvasWindow:
         self.view_center_y_cm = 0.0
         self._closed = False
         self._port = _pick_free_port()
+        self.url = f"http://127.0.0.1:{self._port}/"
         self._server = ThreadingHTTPServer(("127.0.0.1", self._port), self._make_handler())
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
         self._thread.start()
-        webbrowser.open_new(f"http://127.0.0.1:{self._port}/")
+        print(f"Frontend URL: {self.url}")
+        webbrowser.open_new(self.url)
 
     def _make_handler(self):
         outer = self
@@ -779,6 +782,7 @@ class HtmlCanvasWindow:
         obstacle_total: int,
         lidar_cm,
         lidar_debug_rows=None,
+        goal_label: str | None = None,
         runtime_elapsed_s: float = 0.0,
         total_traveled_cm: float = 0.0,
         stationary_elapsed_s: float = 0.0,
@@ -818,6 +822,7 @@ class HtmlCanvasWindow:
                 "obstacle_total": int(obstacle_chunk_count),
                 "throttle_cmd": float(throttle_cmd),
                 "steering_cmd": float(steering_cmd),
+                "goal_label": None if goal_label is None else str(goal_label),
                 "stuck_heat": float(stuck_heat),
                 "reverse_active": bool(reverse_active),
                 "status": str(status),
