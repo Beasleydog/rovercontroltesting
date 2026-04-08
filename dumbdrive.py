@@ -40,6 +40,7 @@ from main import (
 )
 from rover_control import (
     close_rover_socket,
+    configure_remote_server,
     fetch_rover_json,
     open_rover_socket,
     sanitize_lidar_scan,
@@ -51,6 +52,8 @@ from rover_control import (
 
 
 GOOD_UI = True
+REMOTE_SERVER = False
+REMOTE_SERVER_URL = "http://35.3.249.68:5001"
 # FRONTEND_REPLAY_LOG_PATH: str | None = "C:/Users/beasl/.stuff/school/claws/rovercontroltesting/runs/dumbdrive_debug_20260315_232929/frontend_state.jsonl"
 FRONTEND_REPLAY_LOG_PATH: str | None = None
 DUMBDRIVE_GOAL_REACHED_CM = 350.0
@@ -69,20 +72,23 @@ SPEED_DROP_PREVIOUS_MIN_AVG = 1.0
 SPEED_DROP_MIN_DELTA = 0.5
 STUCK_REARM_EXIT_DISTANCE_CM = 45.0
 NORMAL_DRIVE_THROTTLE = 60.0
-MIN_FORWARD_DRIVE_THROTTLE = 60.0
+MIN_FORWARD_DRIVE_THROTTLE = 80.0
 ENABLE_REVERSE_TO_TARGET = False
 REVERSE_TO_TARGET_WINDOW_DEG = 20.0
 RECOVERY_REVERSE_THROTTLE = -85.0
 RECOVERY_REVERSE_SECONDS = 8
-RECOVERY_BRAKE_SECONDS = 5
+RECOVERY_BRAKE_SECONDS = 0
 RECOVERY_REVERSE_STEER_GAIN = 0.35
 ENABLE_HEADING_CORRECTION_OSCILLATION = True
 HEADING_CORRECTION_ENTRY_DEG = 55.0
 HEADING_CORRECTION_EXIT_DEG = 18.0
-HEADING_CORRECTION_PHASE_SEC = 5.0
+HEADING_CORRECTION_PHASE_SEC = 7.0
 HEADING_CORRECTION_FORWARD_THROTTLE = 80.0
 HEADING_CORRECTION_REVERSE_THROTTLE = -80.0
 HEADING_CORRECTION_STEERING_MAGNITUDE = 1.0
+HEADING_CORRECTION_DIRECTION_SWITCH_BRAKE_SEC = 0.2
+HEADING_CORRECTION_OVERTURN_EXIT_DEG = 5.0
+HEADING_CORRECTION_WORSENING_EXIT_DEG = 8.0
 STUCK_OBSTACLE_FORWARD_OFFSET_CM = ROVER_HALF_LENGTH_CM
 STUCK_OBSTACLE_BUMPER_ROW_SAMPLES = 7
 STUCK_HISTORY_FRAMES = 150
@@ -103,6 +109,7 @@ RAW_TSS_TELEMETRY_FIELDS = [
     "pitch",
     "roll",
 ]
+DUMB_PATH_USE_JUMP_POINT_SEARCH = True
 
 
 def make_sanitized_telemetry(raw_telemetry: dict) -> dict:
@@ -433,7 +440,11 @@ def rebuild_planner_with_obstacles(
     obstacle_points_world: list[tuple[float, float]],
     planner_updates_world: list[tuple[str, float, float, float]] | None = None,
 ):
-    planner = create_planner(start_xy, goal_xy)
+    planner = create_planner(
+        start_xy,
+        goal_xy,
+        use_jump_point_search=DUMB_PATH_USE_JUMP_POINT_SEARCH,
+    )
     for obstacle_x, obstacle_y in obstacle_points_world:
         planner.mark_obstacle_world(obstacle_x, obstacle_y, cell_value=CELL_OBSTACLE)
     for update_kind, update_x, update_y, update_delta in planner_updates_world or []:
@@ -579,6 +590,8 @@ def drive_to_goal(
     heading_correction_active = False
     heading_correction_forward_phase = True
     heading_correction_phase_until: float | None = None
+    heading_correction_entry_sign = 0.0
+    heading_correction_best_abs_error = float("inf")
     stuck_detection_armed = False
     stuck_rearm_pending = False
     stuck_rearm_origin_xy: tuple[float, float] | None = None
@@ -646,8 +659,6 @@ def drive_to_goal(
         if reverse_until is not None and now >= reverse_until:
             reverse_until = None
             set_throttle(sock, 0.0)
-            set_brakes(sock, True)
-            time.sleep(RECOVERY_BRAKE_SECONDS)
             set_brakes(sock, False)
             if reverse_replan_pending:
                 planner = rebuild_planner_with_obstacles((x, y), (goal_x, goal_y), recorded_obstacle_points)
@@ -831,6 +842,8 @@ def drive_to_goal(
         if reverse_until is not None:
             heading_correction_active = False
             heading_correction_phase_until = None
+            heading_correction_entry_sign = 0.0
+            heading_correction_best_abs_error = float("inf")
             status = build_status(recovering=True, obstacle_added=obstacle_added, path_len=len(path), goals_reached=goals_reached)
             throttle_cmd = RECOVERY_REVERSE_THROTTLE
             steering_cmd = compute_recovery_reverse_steering(x, y, heading, target_x, target_y)
@@ -840,25 +853,44 @@ def drive_to_goal(
         else:
             status = build_status(recovering=False, obstacle_added=obstacle_added, path_len=len(path), goals_reached=goals_reached)
             desired_throttle_cmd, steering_cmd, _, heading_error = choose_drive_command(x, y, heading, target_x, target_y)
-            if heading_correction_active and abs(heading_error) <= HEADING_CORRECTION_EXIT_DEG:
-                heading_correction_active = False
-                heading_correction_phase_until = None
+            heading_error_sign = 0.0 if abs(heading_error) < 1e-6 else math.copysign(1.0, heading_error)
+            abs_heading_error = abs(heading_error)
+            if heading_correction_active:
+                heading_correction_best_abs_error = min(heading_correction_best_abs_error, abs_heading_error)
+                overturned = (
+                    heading_correction_entry_sign != 0.0
+                    and heading_error_sign != 0.0
+                    and heading_error_sign != heading_correction_entry_sign
+                    and abs_heading_error >= HEADING_CORRECTION_OVERTURN_EXIT_DEG
+                )
+                worsening = abs_heading_error >= (heading_correction_best_abs_error + HEADING_CORRECTION_WORSENING_EXIT_DEG)
+                if abs_heading_error <= HEADING_CORRECTION_EXIT_DEG or overturned or worsening:
+                    heading_correction_active = False
+                    heading_correction_phase_until = None
+                    heading_correction_entry_sign = 0.0
+                    heading_correction_best_abs_error = float("inf")
             if (
                 ENABLE_HEADING_CORRECTION_OSCILLATION
                 and not heading_correction_active
-                and abs(heading_error) >= HEADING_CORRECTION_ENTRY_DEG
+                and abs_heading_error >= HEADING_CORRECTION_ENTRY_DEG
             ):
                 heading_correction_active = True
                 heading_correction_forward_phase = True
                 heading_correction_phase_until = now + HEADING_CORRECTION_PHASE_SEC
+                heading_correction_entry_sign = heading_error_sign
+                heading_correction_best_abs_error = abs_heading_error
 
             if heading_correction_active:
                 if heading_correction_phase_until is None:
                     heading_correction_phase_until = now + HEADING_CORRECTION_PHASE_SEC
                 elif now >= heading_correction_phase_until:
                     heading_correction_forward_phase = not heading_correction_forward_phase
+                    set_throttle(sock, 0.0)
+                    set_brakes(sock, True)
+                    time.sleep(HEADING_CORRECTION_DIRECTION_SWITCH_BRAKE_SEC)
+                    set_brakes(sock, False)
                     heading_correction_phase_until = now + HEADING_CORRECTION_PHASE_SEC
-                steering_sign = 0.0 if abs(heading_error) < 1e-6 else math.copysign(1.0, heading_error)
+                steering_sign = heading_error_sign
                 if heading_correction_forward_phase:
                     throttle_cmd = HEADING_CORRECTION_FORWARD_THROTTLE
                     steering_cmd = steering_sign * HEADING_CORRECTION_STEERING_MAGNITUDE
@@ -1062,6 +1094,7 @@ def main() -> None:
         replay_frontend_log(Path(FRONTEND_REPLAY_LOG_PATH))
         return
 
+    configure_remote_server(REMOTE_SERVER, REMOTE_SERVER_URL)
     sock = open_rover_socket()
     viewer: MapWindow | None = None
     clean_log_writer: CleanGoalLogWriter | None = None

@@ -8,6 +8,8 @@ from pathlib import Path
 
 from dumbdrive import (
     FrontendTimingLogger,
+    REMOTE_SERVER,
+    REMOTE_SERVER_URL,
     drive_to_goal,
     hold_with_ui_updates,
     make_sanitized_telemetry,
@@ -22,11 +24,11 @@ from main import (
 )
 from rover_control import (
     close_rover_socket,
-    extract_json_bytes,
+    configure_remote_server,
+    fetch_ltv_json,
     fetch_rover_json,
     open_rover_socket,
     send_float_command,
-    send_get_command,
     set_brakes,
     set_lights,
     set_steering,
@@ -34,8 +36,6 @@ from rover_control import (
     wait_for_dust,
 )
 
-
-GET_LTV_JSON = 2
 CMD_LTV_PING = 2050
 CMD_LTV_PING_UNLIMITED = 2051
 USE_UNLIMITED_PING = False
@@ -52,6 +52,7 @@ PING_MOVE_GOAL_REACHED_CM = 1000.0
 FINAL_ESTIMATE_GOAL_REACHED_CM = 100.0
 STOP_AT_LAST_KNOWN_ONLY = False
 EFFICIENCY_MODE = True
+#OLD LTV, FROM PREVIOUS RUN, NO LONGER ACCURATE (it gets randomized every time)
 REAL_LTV_LOCATION_M = (-6047.30, -10769.3, 1463.0)
 
 
@@ -123,14 +124,9 @@ class PingStrengthSampler:
             return (self.last_strength, True)
         return (self.last_strength, False)
 
-
 def ltv_ping_to_meters(ping_value: float) -> float:
-    return 14.034819 * math.exp(-0.066163 * float(ping_value))
+    return 14.084069053 * math.exp(-0.064860144 * float(ping_value))
 
-
-def fetch_ltv_json(sock) -> dict:
-    response = send_get_command(sock, GET_LTV_JSON)
-    return json.loads(extract_json_bytes(response).decode("utf-8"))
 
 
 def read_ltv_signal_strength(sock) -> float:
@@ -199,6 +195,16 @@ def trilaterate(
     samples: tuple[PingSample, PingSample, PingSample],
 ) -> tuple[float, float]:
     s1, s2, s3 = samples
+    min_pair_distance_m = min(
+        math.hypot(s2.rover_x_m - s1.rover_x_m, s2.rover_y_m - s1.rover_y_m),
+        math.hypot(s3.rover_x_m - s1.rover_x_m, s3.rover_y_m - s1.rover_y_m),
+        math.hypot(s3.rover_x_m - s2.rover_x_m, s3.rover_y_m - s2.rover_y_m),
+    )
+    if min_pair_distance_m < 0.5:
+        raise RuntimeError(
+            "Ping geometry degenerate; at least two ping samples were taken from nearly "
+            "the same rover position"
+        )
     a11 = 2.0 * (s2.rover_x_m - s1.rover_x_m)
     a12 = 2.0 * (s2.rover_y_m - s1.rover_y_m)
     a21 = 2.0 * (s3.rover_x_m - s1.rover_x_m)
@@ -248,6 +254,11 @@ def triangle_sample_points_cm(
             )
         )
     return points
+
+
+def ping_move_goal_reached_cm(radius_m: float) -> float:
+    radius_cm = float(radius_m) * 100.0
+    return max(FINAL_ESTIMATE_GOAL_REACHED_CM, min(PING_MOVE_GOAL_REACHED_CM, radius_cm * 0.35))
 
 
 def phase_label(phase: str) -> str:
@@ -368,7 +379,6 @@ def drive_to_goal_locate(
             display_goal_xy=final_goal_xy,
             goal_label=goal_label,
             viewer=viewer,
-            frontend_enabled=False,
             recorded_obstacle_points=recorded_obstacle_points,
             obstacle_total=obstacle_total,
             start_time=start_time,
@@ -413,6 +423,7 @@ def collect_triangle_ping_samples(
 ) -> tuple[list[PingSample], object, MapWindow | None, bool]:
     samples: list[PingSample] = []
     triangle_points = triangle_sample_points_cm(center_xy, radius_m)
+    move_goal_reached_cm = ping_move_goal_reached_cm(radius_m)
     for ping_idx, triangle_goal_xy in enumerate(triangle_points, start=1):
         sample_x_m, sample_y_m = local_cm_to_raw_world_m(*triangle_goal_xy)
         print(
@@ -430,7 +441,7 @@ def collect_triangle_ping_samples(
             step_idx=run_state.step_idx,
             total_traveled_cm=run_state.total_traveled_cm,
             goals_reached=0,
-            goal_reached_cm=PING_MOVE_GOAL_REACHED_CM,
+            goal_reached_cm=move_goal_reached_cm,
             telemetry_callback=telemetry_callback,
             debug_logger=debug_logger,
             debug_mode=f"{debug_prefix}_drive_ping_{ping_idx}",
@@ -476,6 +487,7 @@ def collect_triangle_ping_samples(
 
 
 def main() -> None:
+    configure_remote_server(REMOTE_SERVER, REMOTE_SERVER_URL)
     sock = open_rover_socket()
     viewer: MapWindow | None = None
     debug_logger: FrontendTimingLogger | None = None

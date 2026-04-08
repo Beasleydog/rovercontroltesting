@@ -14,6 +14,7 @@ class PlannerConfig:
     cell_size_cm: float = 5.0
     obstacle_padding_cells: int = 2
     allow_diagonal: bool = True
+    use_jump_point_search: bool = False
     nearest_free_search_cm: float = 1000.0
     evidence_cost_scale: float = 0.75
     clearance_cost_scale: float = 1.0
@@ -37,6 +38,7 @@ class OccupancyPlanner:
         self.width_cells = int(width_cells)
         self.height_cells = int(height_cells)
         self.config = config or PlannerConfig()
+        self._obstacle_version = 0
         self.grid = [[CELL_EMPTY for _ in range(self.width_cells)] for _ in range(self.height_cells)]
         self.evidence_grid = [[0.0 for _ in range(self.width_cells)] for _ in range(self.height_cells)]
         self.clearance_grid = [[0.0 for _ in range(self.width_cells)] for _ in range(self.height_cells)]
@@ -83,9 +85,11 @@ class OccupancyPlanner:
             return False
         if current == CELL_LOW_CLEARANCE_OBSTACLE and cell_value == CELL_OBSTACLE:
             self.grid[cy][cx] = CELL_OBSTACLE
+            self._obstacle_version += 1
             return False
         self.grid[cy][cx] = int(cell_value)
         self._apply_padding_block(cell)
+        self._obstacle_version += 1
         return True
 
     def mark_obstacle_world(self, x_cm: float, y_cm: float, cell_value: int = CELL_OBSTACLE) -> bool:
@@ -190,7 +194,10 @@ class OccupancyPlanner:
         if start is None or goal is None:
             return []
 
-        cell_path = self._astar_cells(start, goal)
+        if self.config.use_jump_point_search:
+            cell_path = self._jump_point_search_cells(start, goal)
+        else:
+            cell_path = self._astar_cells(start, goal)
         return [self.cell_to_world_center(cell) for cell in cell_path]
 
     def _nearest_free_cell(self, start: tuple[int, int], max_radius_cm: float | None = None) -> tuple[int, int] | None:
@@ -301,6 +308,159 @@ class OccupancyPlanner:
             cur = came_from[cur]
         path.reverse()
         return path
+
+    def _is_walkable(self, cell: tuple[int, int]) -> bool:
+        return self.in_bounds(cell) and not self.is_padded_obstacle(cell)
+
+    @staticmethod
+    def _direction_between(a: tuple[int, int], b: tuple[int, int]) -> tuple[int, int]:
+        dx = b[0] - a[0]
+        dy = b[1] - a[1]
+        return (
+            0 if dx == 0 else (1 if dx > 0 else -1),
+            0 if dy == 0 else (1 if dy > 0 else -1),
+        )
+
+    def _step_cost(self, from_cell: tuple[int, int], to_cell: tuple[int, int]) -> float:
+        dx = abs(to_cell[0] - from_cell[0])
+        dy = abs(to_cell[1] - from_cell[1])
+        base_cost = math.sqrt(2.0) if dx == 1 and dy == 1 else 1.0
+        return base_cost * self._cell_traversal_cost_multiplier(to_cell)
+
+    def _pruned_neighbor_directions(
+        self,
+        cell: tuple[int, int],
+        parent: tuple[int, int] | None,
+    ) -> list[tuple[int, int]]:
+        if parent is None:
+            return [(dx, dy) for dx, dy, _ in self._neighbor_deltas if self._is_walkable((cell[0] + dx, cell[1] + dy))]
+
+        x, y = cell
+        dx, dy = self._direction_between(parent, cell)
+        directions: list[tuple[int, int]] = []
+
+        def add_direction(step_dx: int, step_dy: int) -> None:
+            nxt = (x + step_dx, y + step_dy)
+            if self._is_walkable(nxt) and (step_dx, step_dy) not in directions:
+                directions.append((step_dx, step_dy))
+
+        if dx != 0 and dy != 0:
+            add_direction(dx, dy)
+            add_direction(dx, 0)
+            add_direction(0, dy)
+            if not self._is_walkable((x - dx, y)):
+                add_direction(-dx, dy)
+            if not self._is_walkable((x, y - dy)):
+                add_direction(dx, -dy)
+        elif dx != 0:
+            add_direction(dx, 0)
+            if not self._is_walkable((x, y + 1)):
+                add_direction(dx, 1)
+            if not self._is_walkable((x, y - 1)):
+                add_direction(dx, -1)
+        else:
+            add_direction(0, dy)
+            if not self._is_walkable((x + 1, y)):
+                add_direction(1, dy)
+            if not self._is_walkable((x - 1, y)):
+                add_direction(-1, dy)
+
+        return directions
+
+    def _has_forced_neighbor(self, cell: tuple[int, int], direction: tuple[int, int]) -> bool:
+        x, y = cell
+        dx, dy = direction
+        if dx != 0 and dy != 0:
+            return (
+                (not self._is_walkable((x - dx, y)) and self._is_walkable((x - dx, y + dy)))
+                or (not self._is_walkable((x, y - dy)) and self._is_walkable((x + dx, y - dy)))
+            )
+        if dx != 0:
+            return (
+                (not self._is_walkable((x, y + 1)) and self._is_walkable((x + dx, y + 1)))
+                or (not self._is_walkable((x, y - 1)) and self._is_walkable((x + dx, y - 1)))
+            )
+        return (
+            (not self._is_walkable((x + 1, y)) and self._is_walkable((x + 1, y + dy)))
+            or (not self._is_walkable((x - 1, y)) and self._is_walkable((x - 1, y + dy)))
+        )
+
+    def _jump(
+        self,
+        current: tuple[int, int],
+        direction: tuple[int, int],
+        goal: tuple[int, int],
+    ) -> tuple[tuple[int, int], float] | None:
+        dx, dy = direction
+        x, y = current
+        next_cell = (x + dx, y + dy)
+        if not self._is_walkable(next_cell):
+            return None
+
+        total_cost = 0.0
+        prev_cell = current
+        while self._is_walkable(next_cell):
+            total_cost += self._step_cost(prev_cell, next_cell)
+            if next_cell == goal:
+                return (next_cell, total_cost)
+            if self._has_forced_neighbor(next_cell, direction):
+                return (next_cell, total_cost)
+            if dx != 0 and dy != 0:
+                if self._jump(next_cell, (dx, 0), goal) is not None:
+                    return (next_cell, total_cost)
+                if self._jump(next_cell, (0, dy), goal) is not None:
+                    return (next_cell, total_cost)
+            prev_cell = next_cell
+            next_cell = (next_cell[0] + dx, next_cell[1] + dy)
+        return None
+
+    def _expand_jump_path(
+        self,
+        jump_path: list[tuple[int, int]],
+    ) -> list[tuple[int, int]]:
+        if not jump_path:
+            return []
+        expanded: list[tuple[int, int]] = [jump_path[0]]
+        for idx in range(1, len(jump_path)):
+            segment = self._rasterized_line_cells(jump_path[idx - 1], jump_path[idx])
+            if segment:
+                expanded.extend(segment[1:])
+        return expanded
+
+    def _jump_point_search_cells(self, start: tuple[int, int], goal: tuple[int, int]) -> list[tuple[int, int]]:
+        frontier: list[tuple[float, tuple[int, int]]] = []
+        heapq.heappush(frontier, (0.0, start))
+        came_from: dict[tuple[int, int], tuple[int, int] | None] = {start: None}
+        cost_so_far: dict[tuple[int, int], float] = {start: 0.0}
+
+        while frontier:
+            _, current = heapq.heappop(frontier)
+            if current == goal:
+                break
+
+            parent = came_from[current]
+            for direction in self._pruned_neighbor_directions(current, parent):
+                jump_result = self._jump(current, direction, goal)
+                if jump_result is None:
+                    continue
+                jump_cell, jump_cost = jump_result
+                new_cost = cost_so_far[current] + jump_cost
+                if jump_cell not in cost_so_far or new_cost < cost_so_far[jump_cell]:
+                    cost_so_far[jump_cell] = new_cost
+                    priority = new_cost + self._heuristic(jump_cell, goal)
+                    heapq.heappush(frontier, (priority, jump_cell))
+                    came_from[jump_cell] = current
+
+        if goal not in came_from:
+            return []
+
+        jump_path: list[tuple[int, int]] = []
+        cur: tuple[int, int] | None = goal
+        while cur is not None:
+            jump_path.append(cur)
+            cur = came_from[cur]
+        jump_path.reverse()
+        return self._expand_jump_path(jump_path)
 
 
 def _local_to_world_2d(

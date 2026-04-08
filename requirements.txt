@@ -2,3 +2,7 @@ numpy>=1.24
 pygame>=2.5
 torch>=2.2
 matplotlib>=3.8
+python-socketio>=5.11
+flask-socketio>=5.3.5
+requests
+websocket-client

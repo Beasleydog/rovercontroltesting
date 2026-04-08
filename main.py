@@ -1157,7 +1157,12 @@ def obstacle_mask_from_inference(infer_output: dict, lidar_count: int) -> np.nda
     return padded
 
 
-def create_planner(start_xy: tuple[float, float], goal_xy: tuple[float, float]) -> OccupancyPlanner:
+def create_planner(
+    start_xy: tuple[float, float],
+    goal_xy: tuple[float, float],
+    *,
+    use_jump_point_search: bool = False,
+) -> OccupancyPlanner:
     min_x = min(start_xy[0], goal_xy[0]) - GRID_MARGIN_CM
     max_x = max(start_xy[0], goal_xy[0]) + GRID_MARGIN_CM
     min_y = min(start_xy[1], goal_xy[1]) - GRID_MARGIN_CM
@@ -1175,6 +1180,7 @@ def create_planner(start_xy: tuple[float, float], goal_xy: tuple[float, float]) 
             cell_size_cm=GRID_CELL_SIZE_CM,
             obstacle_padding_cells=OBSTACLE_PADDING_CELLS,
             allow_diagonal=True,
+            use_jump_point_search=use_jump_point_search,
             evidence_cost_scale=PATH_EVIDENCE_COST_SCALE,
             clearance_cost_scale=PATH_CLEARANCE_COST_SCALE,
             evidence_min_value=PATH_EVIDENCE_MIN_VALUE,

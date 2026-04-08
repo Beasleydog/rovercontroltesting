@@ -11,14 +11,19 @@ import json
 import math
 import socket
 import struct
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
+
+import socketio
 
 
 SERVER_HOST = "172.24.119.191"
 SERVER_PORT = 14141
 SOCKET_TIMEOUT = 1.0
+REMOTE_SERVER_ENABLED = False
+REMOTE_SERVER_URL = "http://127.0.0.1:5001"
 
 LIDAR_LOG_PATH = "lidar_log.csv"
 LIDAR_LOG_HZ = 0.0
@@ -26,6 +31,9 @@ LIDAR_LOG_ALL = False
 LIDAR_MAX_VALID_CM = 1000.0
 
 GET_ROVER_JSON = 0
+GET_EVA_JSON = 1
+GET_LTV_JSON = 2
+GET_LTV_ERRORS_JSON = 3
 
 CMD_CABIN_HEATING = 1103
 CMD_CABIN_COOLING = 1104
@@ -34,15 +42,128 @@ CMD_BRAKES = 1107
 CMD_THROTTLE = 1109
 CMD_STEERING = 1110
 STEERING_COMMAND_SIGN = -1.0
+CMD_PING = 2050
+CMD_DEBUG_PING = 2051
+
+REMOTE_COMMAND_EVENT_BY_ID = {
+    CMD_CABIN_HEATING: "rover-heating",
+    CMD_CABIN_COOLING: "rover-cooling",
+    CMD_LIGHTS: "rover-headlights",
+    CMD_BRAKES: "rover-brakes",
+    CMD_THROTTLE: "rover-throttle",
+    CMD_STEERING: "rover-steering",
+    CMD_PING: "rover-ping",
+    CMD_DEBUG_PING: "rover-debug-ping",
+}
+
+
+def configure_remote_server(enabled: bool, url: str | None = None) -> None:
+    global REMOTE_SERVER_ENABLED, REMOTE_SERVER_URL
+    REMOTE_SERVER_ENABLED = bool(enabled)
+    if url:
+        REMOTE_SERVER_URL = str(url)
+
+
+class RemoteRoverClient:
+    def __init__(self, url: str) -> None:
+        self.url = str(url)
+        self.sio = socketio.Client(reconnection=True)
+        self._state_lock = threading.Lock()
+        self._connected_event = threading.Event()
+        self._rover_event = threading.Event()
+        self._ltv_event = threading.Event()
+        self._eva_event = threading.Event()
+        self._ltv_errors_event = threading.Event()
+        self._latest_rover: dict | None = None
+        self._latest_ltv: dict | None = None
+        self._latest_eva: dict | None = None
+        self._latest_ltv_errors: dict | None = None
+
+        @self.sio.event
+        def connect() -> None:
+            self._connected_event.set()
+
+        @self.sio.event
+        def disconnect() -> None:
+            self._connected_event.clear()
+
+        @self.sio.on("rover-telemetry")
+        def on_rover_telemetry(data) -> None:
+            payload = dict(data) if isinstance(data, dict) else {}
+            with self._state_lock:
+                self._latest_rover = payload
+            self._rover_event.set()
+
+        @self.sio.on("ltv-telemetry")
+        def on_ltv_telemetry(data) -> None:
+            payload = dict(data) if isinstance(data, dict) else {}
+            with self._state_lock:
+                self._latest_ltv = payload
+            self._ltv_event.set()
+
+        @self.sio.on("eva-telemetry")
+        def on_eva_telemetry(data) -> None:
+            payload = dict(data) if isinstance(data, dict) else {}
+            with self._state_lock:
+                self._latest_eva = payload
+            self._eva_event.set()
+
+        @self.sio.on("ltv-errors-telemetry")
+        def on_ltv_errors_telemetry(data) -> None:
+            payload = dict(data) if isinstance(data, dict) else {}
+            with self._state_lock:
+                self._latest_ltv_errors = payload
+            self._ltv_errors_event.set()
+
+    def connect(self, timeout_seconds: float = 5.0) -> None:
+        self.sio.connect(self.url, wait=True, wait_timeout=timeout_seconds)
+        if not self._connected_event.wait(timeout_seconds):
+            raise RuntimeError(f"Timed out connecting to remote rover server at {self.url}")
+
+    def close(self) -> None:
+        if self.sio.connected:
+            self.sio.disconnect()
+
+    def emit(self, event_name: str, payload=None) -> bool:
+        self.sio.emit(event_name, payload)
+        return True
+
+    def _payload_event_for_get(self, command: int) -> tuple[str, threading.Event, str]:
+        mapping = {
+            GET_ROVER_JSON: ("_latest_rover", self._rover_event, "rover"),
+            GET_LTV_JSON: ("_latest_ltv", self._ltv_event, "ltv"),
+            GET_EVA_JSON: ("_latest_eva", self._eva_event, "eva"),
+            GET_LTV_ERRORS_JSON: ("_latest_ltv_errors", self._ltv_errors_event, "ltv-errors"),
+        }
+        if command not in mapping:
+            raise RuntimeError(f"Remote server does not support GET command {command}")
+        return mapping[command]
+
+    def get_json_for_command(self, command: int, timeout_seconds: float = SOCKET_TIMEOUT) -> dict:
+        attr_name, ready_event, label = self._payload_event_for_get(command)
+        if not ready_event.wait(timeout_seconds):
+            raise RuntimeError(f"Timed out waiting for remote {label} telemetry from {self.url}")
+        with self._state_lock:
+            payload = getattr(self, attr_name)
+            if not isinstance(payload, dict):
+                raise RuntimeError(f"Remote {label} telemetry is unavailable")
+            return dict(payload)
 
 
 def open_rover_socket() -> socket.socket:
+    if REMOTE_SERVER_ENABLED:
+        client = RemoteRoverClient(REMOTE_SERVER_URL)
+        client.connect(timeout_seconds=max(5.0, SOCKET_TIMEOUT))
+        return client
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(SOCKET_TIMEOUT)
     return sock
 
 
 def close_rover_socket(sock: socket.socket) -> None:
+    if isinstance(sock, RemoteRoverClient):
+        sock.close()
+        return
     sock.close()
 
 
@@ -69,6 +190,16 @@ def send_packet(sock: socket.socket, packet: bytes, response_size: int = 8192) -
 
 
 def send_float_command(sock: socket.socket, command: int, value: float) -> bool:
+    if isinstance(sock, RemoteRoverClient):
+        event_name = REMOTE_COMMAND_EVENT_BY_ID.get(int(command))
+        if event_name is None:
+            raise RuntimeError(f"Remote server does not support command {command}")
+        payload = float(value)
+        if int(command) == CMD_BRAKES:
+            return sock.emit(event_name, bool(payload >= 0.5))
+        if int(command) in (CMD_PING, CMD_DEBUG_PING) and abs(payload - 1.0) <= 1e-6:
+            return sock.emit(event_name, None)
+        return sock.emit(event_name, payload)
     packet = struct.pack(">IIf", unix_timestamp(), command, float(value))
     response = send_packet(sock, packet, response_size=64)
     if len(response) < 4:
@@ -77,6 +208,9 @@ def send_float_command(sock: socket.socket, command: int, value: float) -> bool:
 
 
 def send_get_command(sock: socket.socket, command: int) -> bytes:
+    if isinstance(sock, RemoteRoverClient):
+        payload = sock.get_json_for_command(int(command), timeout_seconds=SOCKET_TIMEOUT)
+        return json.dumps(payload).encode("utf-8")
     packet = struct.pack(">II", unix_timestamp(), command)
     return send_packet(sock, packet)
 
@@ -91,6 +225,11 @@ def extract_json_bytes(response: bytes) -> bytes:
 
 def fetch_rover_json(sock: socket.socket) -> dict:
     response = send_get_command(sock, GET_ROVER_JSON)
+    return json.loads(extract_json_bytes(response).decode("utf-8"))
+
+
+def fetch_ltv_json(sock: socket.socket) -> dict:
+    response = send_get_command(sock, GET_LTV_JSON)
     return json.loads(extract_json_bytes(response).decode("utf-8"))
 
 

@@ -117,6 +117,7 @@ HTML_PAGE = """<!doctype html>
     let camera = null;
     let manualZoom = 1.0;
     let lastAutoFitMs = null;
+    let dragState = null;
 
     function resize() {
       const dpr = window.devicePixelRatio || 1;
@@ -236,6 +237,17 @@ HTML_PAGE = """<!doctype html>
       const sx = ((x - view.minX) / (view.maxX - view.minX)) * w;
       const sy = h - ((y - view.minY) / (view.maxY - view.minY)) * h;
       return [sx, sy];
+    }
+
+    function toWorld(view, sx, sy, w, h) {
+      const worldX = view.minX + (sx / Math.max(w, 1)) * (view.maxX - view.minX);
+      const worldY = view.minY + ((h - sy) / Math.max(h, 1)) * (view.maxY - view.minY);
+      return [worldX, worldY];
+    }
+
+    function canvasPointFromEvent(event) {
+      const rect = canvas.getBoundingClientRect();
+      return [event.clientX - rect.left, event.clientY - rect.top];
     }
 
     function drawBackgroundImage(w, h) {
@@ -548,11 +560,58 @@ HTML_PAGE = """<!doctype html>
     canvas.addEventListener('wheel', (event) => {
       event.preventDefault();
       if (!camera) return;
+      const rect = canvas.getBoundingClientRect();
+      const canvasW = Math.max(rect.width, 1);
+      const canvasH = Math.max(rect.height, 1);
+      const beforeView = getView();
+      const cursorX = event.clientX - rect.left;
+      const cursorY = event.clientY - rect.top;
+      const [worldXBefore, worldYBefore] = toWorld(beforeView, cursorX, cursorY, canvasW, canvasH);
       const zoomFactor = event.deltaY < 0 ? 0.88 : 1.14;
       manualZoom = Math.max(0.35, Math.min(6.0, manualZoom * zoomFactor));
       camera.spanX *= zoomFactor;
       camera.spanY *= zoomFactor;
+      camera.centerX = worldXBefore - (cursorX / canvasW - 0.5) * camera.spanX;
+      camera.centerY = worldYBefore - (0.5 - cursorY / canvasH) * camera.spanY;
+      lastAutoFitMs = performance.now();
     }, { passive: false });
+
+    canvas.addEventListener('pointerdown', (event) => {
+      if (!camera) return;
+      const [startX, startY] = canvasPointFromEvent(event);
+      canvas.setPointerCapture(event.pointerId);
+      dragState = {
+        pointerId: event.pointerId,
+        startX,
+        startY,
+        startCenterX: camera.centerX,
+        startCenterY: camera.centerY,
+      };
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+      if (!camera || !dragState || dragState.pointerId !== event.pointerId) return;
+      const [x, y] = canvasPointFromEvent(event);
+      const rect = canvas.getBoundingClientRect();
+      const canvasW = Math.max(rect.width, 1);
+      const canvasH = Math.max(rect.height, 1);
+      const dxPx = x - dragState.startX;
+      const dyPx = y - dragState.startY;
+      camera.centerX = dragState.startCenterX - (dxPx / canvasW) * camera.spanX;
+      camera.centerY = dragState.startCenterY + (dyPx / canvasH) * camera.spanY;
+      lastAutoFitMs = performance.now();
+    });
+
+    function endDrag(event) {
+      if (!dragState || dragState.pointerId !== event.pointerId) return;
+      if (canvas.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+      }
+      dragState = null;
+    }
+
+    canvas.addEventListener('pointerup', endDrag);
+    canvas.addEventListener('pointercancel', endDrag);
 
     window.addEventListener('resize', resize);
     resize();
@@ -584,8 +643,6 @@ class HtmlCanvasWindow:
             "heading_deg": 0.0,
             "path_world": [],
             "map_path_world": [],
-            "obstacles_world": [],
-            "obstacle_chunks": [],
             "map_obstacles_world": [],
             "map_obstacle_chunks": [],
             "cell_size_cm": float(planner.config.cell_size_cm),
@@ -601,6 +658,11 @@ class HtmlCanvasWindow:
             "reverse_active": False,
             "status": "Starting...",
         }
+        self._cached_planner_id: int | None = None
+        self._cached_obstacle_version: int = -1
+        self._cached_map_obstacles_world: list[list[float | int]] = []
+        self._cached_map_obstacle_chunks: list[list[float]] = []
+        self._cached_obstacle_chunk_count: int = 0
         self.view_center_x_cm = 0.0
         self.view_center_y_cm = 0.0
         self._closed = False
@@ -705,6 +767,22 @@ class HtmlCanvasWindow:
     def _serialize_chunk_centers_raw(cls, chunk_centers: list[tuple[float, float]]) -> list[list[float]]:
         return [cls._local_xy_to_raw(center) for center in chunk_centers]
 
+    def _get_cached_obstacle_payload(self, planner) -> tuple[list[list[float | int]], list[list[float]], int]:
+        planner_id = id(planner)
+        obstacle_version = int(getattr(planner, "_obstacle_version", -1))
+        if planner_id != self._cached_planner_id or obstacle_version != self._cached_obstacle_version:
+            obstacle_chunks = self._compute_obstacle_chunks(planner)
+            self._cached_map_obstacles_world = self._serialize_obstacles_raw(planner)
+            self._cached_map_obstacle_chunks = self._serialize_chunk_centers_raw(obstacle_chunks)
+            self._cached_obstacle_chunk_count = len(obstacle_chunks)
+            self._cached_planner_id = planner_id
+            self._cached_obstacle_version = obstacle_version
+        return (
+            list(self._cached_map_obstacles_world),
+            list(self._cached_map_obstacle_chunks),
+            int(self._cached_obstacle_chunk_count),
+        )
+
     @staticmethod
     def _count_obstacle_chunks(planner, merge_distance_cm: float = 700.0) -> int:
         return len(HtmlCanvasWindow._compute_obstacle_chunks(planner, merge_distance_cm=merge_distance_cm))
@@ -790,15 +868,12 @@ class HtmlCanvasWindow:
         raw_rover_xy: tuple[float, float] = (0.0, 0.0),
     ) -> bool:
         eta_seconds = self._estimate_eta_seconds(goal_distance_cm, runtime_elapsed_s, total_traveled_cm)
-        obstacle_chunks = self._compute_obstacle_chunks(planner)
-        obstacle_chunk_count = len(obstacle_chunks)
+        map_obstacles_world, map_obstacle_chunks, obstacle_chunk_count = self._get_cached_obstacle_payload(planner)
         stuck_heat = 0.0 if reverse_active else max(0.0, min(1.0, float(stationary_elapsed_s) / 7.0))
         with self._state_lock:
             map_goal_xy = self._local_xy_to_raw(goal_xy)
             map_rover_xy = [float(raw_rover_xy[0]), float(raw_rover_xy[1])]
             map_path_world = self._serialize_path_raw(path_world)
-            map_obstacles_world = self._serialize_obstacles_raw(planner)
-            map_obstacle_chunks = self._serialize_chunk_centers_raw(obstacle_chunks)
             self._state = {
                 "goal_xy": [float(goal_xy[0]), float(goal_xy[1])],
                 "target_xy": [float(target_xy[0]), float(target_xy[1])],
@@ -809,8 +884,6 @@ class HtmlCanvasWindow:
                 "heading_deg": float(heading_deg),
                 "path_world": [[float(x), float(y)] for x, y in path_world],
                 "map_path_world": map_path_world,
-                "obstacles_world": self._serialize_obstacles(planner),
-                "obstacle_chunks": [[float(x), float(y)] for x, y in obstacle_chunks],
                 "map_obstacles_world": map_obstacles_world,
                 "map_obstacle_chunks": map_obstacle_chunks,
                 "cell_size_cm": float(planner.config.cell_size_cm),
