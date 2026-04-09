@@ -43,15 +43,19 @@ PING_SETTLE_SEC = 1.2
 PING_LOG_INTERVAL_SEC = 1.0
 PING_RESPONSE_TIMEOUT_SEC = 1.5
 PING_RESPONSE_POLL_SEC = 0.05
-PING_TRIANGLE_RADIUS_M = 50.0
-SECOND_TRILOCATION_RADIUS_M = 5.0
+ENABLE_METRICS_LOGGING = False
 SECOND_TRILOCATION_STRONG_PING_THRESHOLD = -0.75
 MAX_DRIVE_SEGMENT_CM = 4000.0
-LAST_KNOWN_GOAL_REACHED_CM = 1000.0
+LAST_KNOWN_GOAL_REACHED_CM = 10000.0
 PING_MOVE_GOAL_REACHED_CM = 1000.0
 FINAL_ESTIMATE_GOAL_REACHED_CM = 100.0
 STOP_AT_LAST_KNOWN_ONLY = False
 EFFICIENCY_MODE = True
+GUIDED_PING_STEP_RADIUS_SCALE = 0.35
+GUIDED_PING_STEP_MIN_CM = 600.0
+GUIDED_PING_STEP_MAX_CM = 2000.0
+GUIDED_PING_LATERAL_SCALE = 0.85
+GUIDED_PING_GOAL_REACHED_SCALE = 0.45
 #OLD LTV, FROM PREVIOUS RUN, NO LONGER ACCURATE (it gets randomized every time)
 REAL_LTV_LOCATION_M = (-6047.30, -10769.3, 1463.0)
 
@@ -62,6 +66,48 @@ class PingSample:
     rover_y_m: float
     ping_value: float
     radius_m: float
+
+
+@dataclass(frozen=True, slots=True)
+class TrilaterationRoundConfig:
+    round_index: int
+    debug_prefix: str
+    estimate_label: str
+    prepare_status: str
+    pre_drive_hold_debug_mode: str
+    final_drive_debug_mode: str
+    arrival_message: str
+
+
+TRILATERATION_ROUNDS: tuple[TrilaterationRoundConfig, ...] = (
+    TrilaterationRoundConfig(
+        round_index=1,
+        debug_prefix="dumblocate_round1",
+        estimate_label="Trilaterated LTV estimate",
+        prepare_status="Preparing final drive...",
+        pre_drive_hold_debug_mode="dumblocate_hold_before_final_drive",
+        final_drive_debug_mode="dumblocate_drive_final",
+        arrival_message="Arrived near trilaterated LTV location.",
+    ),
+    TrilaterationRoundConfig(
+        round_index=2,
+        debug_prefix="dumblocate_round2",
+        estimate_label="Second-round trilaterated LTV estimate",
+        prepare_status="Preparing second final drive...",
+        pre_drive_hold_debug_mode="dumblocate_hold_before_second_final_drive",
+        final_drive_debug_mode="dumblocate_drive_second_final",
+        arrival_message="Arrived near second-round trilaterated LTV location.",
+    ),
+    TrilaterationRoundConfig(
+        round_index=3,
+        debug_prefix="dumblocate_round3",
+        estimate_label="Third-round trilaterated LTV estimate",
+        prepare_status="Preparing third final drive...",
+        pre_drive_hold_debug_mode="dumblocate_hold_before_third_final_drive",
+        final_drive_debug_mode="dumblocate_drive_third_final",
+        arrival_message="Arrived near third-round trilaterated LTV location.",
+    ),
+)
 
 
 class LocateMetricsLogger:
@@ -239,26 +285,58 @@ def local_cm_to_raw_world_m(x_cm: float, y_cm: float) -> tuple[float, float]:
     return (x_m, y_m)
 
 
-def triangle_sample_points_cm(
-    center_xy: tuple[float, float],
-    radius_m: float,
+def ping_move_goal_reached_cm(radius_m: float, desired_step_cm: float | None = None) -> float:
+    radius_cm = float(radius_m) * 100.0
+    tolerance_from_radius_cm = radius_cm * 0.35
+    tolerance_from_step_cm = 0.0 if desired_step_cm is None else float(desired_step_cm) * GUIDED_PING_GOAL_REACHED_SCALE
+    return max(
+        FINAL_ESTIMATE_GOAL_REACHED_CM,
+        min(PING_MOVE_GOAL_REACHED_CM, max(tolerance_from_radius_cm, tolerance_from_step_cm)),
+    )
+
+
+def clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
+
+
+def normalize_xy(dx: float, dy: float) -> tuple[float, float]:
+    dist = math.hypot(dx, dy)
+    if dist <= 1e-9:
+        return (1.0, 0.0)
+    return (dx / dist, dy / dist)
+
+
+def guided_sample_points_cm(
+    *,
+    first_sample_xy: tuple[float, float],
+    anchor_xy: tuple[float, float],
+    first_radius_m: float,
+    fallback_heading_deg: float,
 ) -> list[tuple[float, float]]:
-    radius_cm = float(radius_m) * 100.0
-    points: list[tuple[float, float]] = []
-    for angle_deg in (90.0, 210.0, 330.0):
-        angle_rad = math.radians(angle_deg)
-        points.append(
-            (
-                center_xy[0] + radius_cm * math.cos(angle_rad),
-                center_xy[1] + radius_cm * math.sin(angle_rad),
-            )
-        )
-    return points
-
-
-def ping_move_goal_reached_cm(radius_m: float) -> float:
-    radius_cm = float(radius_m) * 100.0
-    return max(FINAL_ESTIMATE_GOAL_REACHED_CM, min(PING_MOVE_GOAL_REACHED_CM, radius_cm * 0.35))
+    dx = anchor_xy[0] - first_sample_xy[0]
+    dy = anchor_xy[1] - first_sample_xy[1]
+    if math.hypot(dx, dy) <= 1e-6:
+        heading_rad = math.radians(float(fallback_heading_deg))
+        forward_x = math.cos(heading_rad)
+        forward_y = math.sin(heading_rad)
+    else:
+        forward_x, forward_y = normalize_xy(dx, dy)
+    left_x = -forward_y
+    left_y = forward_x
+    step_cm = clamp(
+        float(first_radius_m) * 100.0 * GUIDED_PING_STEP_RADIUS_SCALE,
+        GUIDED_PING_STEP_MIN_CM,
+        GUIDED_PING_STEP_MAX_CM,
+    )
+    forward_goal_xy = (
+        first_sample_xy[0] + forward_x * step_cm,
+        first_sample_xy[1] + forward_y * step_cm,
+    )
+    lateral_goal_xy = (
+        first_sample_xy[0] + forward_x * (0.5 * step_cm) + left_x * (step_cm * GUIDED_PING_LATERAL_SCALE),
+        first_sample_xy[1] + forward_y * (0.5 * step_cm) + left_y * (step_cm * GUIDED_PING_LATERAL_SCALE),
+    )
+    return [forward_goal_xy, lateral_goal_xy]
 
 
 def phase_label(phase: str) -> str:
@@ -410,11 +488,10 @@ def drive_to_goal_locate(
     )
 
 
-def collect_triangle_ping_samples(
+def collect_guided_ping_samples(
     sock,
     *,
-    center_xy: tuple[float, float],
-    radius_m: float,
+    anchor_xy: tuple[float, float],
     run_state,
     viewer,
     telemetry_callback,
@@ -422,17 +499,48 @@ def collect_triangle_ping_samples(
     debug_prefix: str,
 ) -> tuple[list[PingSample], object, MapWindow | None, bool]:
     samples: list[PingSample] = []
-    triangle_points = triangle_sample_points_cm(center_xy, radius_m)
-    move_goal_reached_cm = ping_move_goal_reached_cm(radius_m)
-    for ping_idx, triangle_goal_xy in enumerate(triangle_points, start=1):
-        sample_x_m, sample_y_m = local_cm_to_raw_world_m(*triangle_goal_xy)
+    print(f"Collecting {debug_prefix} ping 1 at current rover position...")
+    if not hold_with_ui_updates(
+        sock,
+        viewer=viewer,
+        planner=run_state.planner,
+        goal_xy=run_state.goal_xy,
+        obstacle_total=run_state.obstacle_total,
+        start_time=run_state.start_time,
+        total_traveled_cm=run_state.total_traveled_cm,
+        duration_s=PING_SETTLE_SEC,
+        status=f"Collecting {debug_prefix} ping 1...",
+        telemetry_callback=telemetry_callback,
+        debug_logger=debug_logger,
+        debug_mode=f"{debug_prefix}_hold_ping_1",
+    ):
+        return (samples, run_state, viewer, False)
+    samples.append(sample_ping(sock, run_state.raw_telemetry))
+
+    first_sample_xy = (run_state.pose_xyzh[0], run_state.pose_xyzh[1])
+    guided_points = guided_sample_points_cm(
+        first_sample_xy=first_sample_xy,
+        anchor_xy=anchor_xy,
+        first_radius_m=samples[0].radius_m,
+        fallback_heading_deg=run_state.pose_xyzh[3],
+    )
+    for ping_idx, guided_goal_xy in enumerate(guided_points, start=2):
+        sample_x_m, sample_y_m = local_cm_to_raw_world_m(*guided_goal_xy)
+        desired_step_cm = math.hypot(
+            guided_goal_xy[0] - first_sample_xy[0],
+            guided_goal_xy[1] - first_sample_xy[1],
+        )
+        move_goal_reached_cm = ping_move_goal_reached_cm(
+            samples[0].radius_m,
+            desired_step_cm=desired_step_cm,
+        )
         print(
-            f"Driving to {debug_prefix} ping {ping_idx} triangle point: "
+            f"Driving to {debug_prefix} ping {ping_idx} guided point: "
             f"({sample_x_m:.3f}, {sample_y_m:.3f}) m"
         )
         run_state = drive_to_goal_locate(
             sock,
-            final_goal_xy=triangle_goal_xy,
+            final_goal_xy=guided_goal_xy,
             goal_label=f"{sample_x_m:.3f}, {sample_y_m:.3f}",
             viewer=viewer,
             recorded_obstacle_points=run_state.recorded_obstacle_points,
@@ -467,7 +575,7 @@ def collect_triangle_ping_samples(
         ):
             return (samples, run_state, viewer, False)
         samples.append(sample_ping(sock, run_state.raw_telemetry))
-        if ping_idx < len(triangle_points):
+        if ping_idx < 3:
             if not hold_with_ui_updates(
                 sock,
                 viewer=viewer,
@@ -486,6 +594,72 @@ def collect_triangle_ping_samples(
     return (samples, run_state, viewer, True)
 
 
+def run_trilateration_round(
+    sock,
+    *,
+    round_config: TrilaterationRoundConfig,
+    anchor_xy: tuple[float, float],
+    run_state,
+    viewer,
+    telemetry_callback,
+    debug_logger: FrontendTimingLogger | None,
+) -> tuple[tuple[float, float] | None, object, MapWindow | None, bool]:
+    samples, run_state, viewer, ok = collect_guided_ping_samples(
+        sock,
+        anchor_xy=anchor_xy,
+        run_state=run_state,
+        viewer=viewer,
+        telemetry_callback=telemetry_callback,
+        debug_logger=debug_logger,
+        debug_prefix=round_config.debug_prefix,
+    )
+    if not ok or run_state.aborted:
+        return (None, run_state, viewer, False)
+
+    est_x_m, est_y_m = trilaterate((samples[0], samples[1], samples[2]))
+    print(f"{round_config.estimate_label}: ({est_x_m:.3f}, {est_y_m:.3f}) m")
+    goal_x, goal_y = raw_world_m_to_local_cm(est_x_m, est_y_m)
+
+    if not hold_with_ui_updates(
+        sock,
+        viewer=viewer,
+        planner=run_state.planner,
+        goal_xy=(goal_x, goal_y),
+        obstacle_total=run_state.obstacle_total,
+        start_time=run_state.start_time,
+        total_traveled_cm=run_state.total_traveled_cm,
+        duration_s=0.5,
+        status=round_config.prepare_status,
+        telemetry_callback=telemetry_callback,
+        debug_logger=debug_logger,
+        debug_mode=round_config.pre_drive_hold_debug_mode,
+    ):
+        return (None, run_state, viewer, False)
+
+    run_state = drive_to_goal_locate(
+        sock,
+        final_goal_xy=(goal_x, goal_y),
+        goal_label=f"{est_x_m:.3f}, {est_y_m:.3f}",
+        viewer=viewer,
+        recorded_obstacle_points=run_state.recorded_obstacle_points,
+        obstacle_total=run_state.obstacle_total,
+        start_time=run_state.start_time,
+        step_idx=run_state.step_idx,
+        total_traveled_cm=run_state.total_traveled_cm,
+        goals_reached=0,
+        goal_reached_cm=FINAL_ESTIMATE_GOAL_REACHED_CM,
+        telemetry_callback=telemetry_callback,
+        debug_logger=debug_logger,
+        debug_mode=round_config.final_drive_debug_mode,
+    )
+    viewer = run_state.viewer
+    if run_state.aborted:
+        return (None, run_state, viewer, False)
+
+    print(round_config.arrival_message)
+    return ((est_x_m, est_y_m), run_state, viewer, True)
+
+
 def main() -> None:
     configure_remote_server(REMOTE_SERVER, REMOTE_SERVER_URL)
     sock = open_rover_socket()
@@ -498,8 +672,9 @@ def main() -> None:
     print(f"Dumblocate start: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(run_start_wall))}")
     try:
         debug_logger = FrontendTimingLogger("dumblocate")
-        metrics_logger = LocateMetricsLogger()
-        ping_sampler = PingStrengthSampler(PING_LOG_INTERVAL_SEC)
+        if ENABLE_METRICS_LOGGING:
+            metrics_logger = LocateMetricsLogger()
+            ping_sampler = PingStrengthSampler(PING_LOG_INTERVAL_SEC)
         if not wait_for_dust(sock, timeout_seconds=20.0, poll_seconds=0.5):
             raise RuntimeError("DUST is not connected to TSS.")
         set_lights(sock, True)
@@ -544,7 +719,7 @@ def main() -> None:
             total_traveled_cm=0.0,
             goals_reached=0,
             goal_reached_cm=LAST_KNOWN_GOAL_REACHED_CM,
-            telemetry_callback=log_metrics,
+            telemetry_callback=log_metrics if ENABLE_METRICS_LOGGING else None,
             debug_logger=debug_logger,
             debug_mode="dumblocate_drive_last_known",
         )
@@ -556,143 +731,67 @@ def main() -> None:
             print("Reached last known LTV location. Stopping here because STOP_AT_LAST_KNOWN_ONLY is enabled.")
             return
 
-        samples: list[PingSample] = []
         last_known_remaining_cm = math.hypot(
             goal_x - run_state.pose_xyzh[0],
             goal_y - run_state.pose_xyzh[1],
         )
-        print("Arrived at last known location.")
-        print(f"Distance from last known at triangle start: {last_known_remaining_cm:.1f} cm")
-
-        samples, run_state, viewer, ok = collect_triangle_ping_samples(
-            sock,
-            center_xy=(goal_x, goal_y),
-            radius_m=PING_TRIANGLE_RADIUS_M,
-            run_state=run_state,
-            viewer=viewer,
-            telemetry_callback=log_metrics,
-            debug_logger=debug_logger,
-            debug_prefix="dumblocate_round1",
-        )
-        if not ok or run_state.aborted:
-            return
-        est_x_m, est_y_m = trilaterate((samples[0], samples[1], samples[2]))
-        print(f"Trilaterated LTV estimate: ({est_x_m:.3f}, {est_y_m:.3f}) m")
-
-        goal_x, goal_y = raw_world_m_to_local_cm(est_x_m, est_y_m)
-        if not hold_with_ui_updates(
-            sock,
-            viewer=viewer,
-            planner=run_state.planner,
-            goal_xy=(goal_x, goal_y),
-            obstacle_total=run_state.obstacle_total,
-            start_time=run_state.start_time,
-            total_traveled_cm=run_state.total_traveled_cm,
-            duration_s=0.5,
-            status="Preparing final drive...",
-            telemetry_callback=log_metrics,
-            debug_logger=debug_logger,
-            debug_mode="dumblocate_hold_before_final_drive",
-        ):
-            return
-        run_state = drive_to_goal_locate(
-            sock,
-            final_goal_xy=(goal_x, goal_y),
-            goal_label=f"{est_x_m:.3f}, {est_y_m:.3f}",
-            viewer=viewer,
-            recorded_obstacle_points=run_state.recorded_obstacle_points,
-            obstacle_total=run_state.obstacle_total,
-            start_time=run_state.start_time,
-            step_idx=run_state.step_idx,
-            total_traveled_cm=run_state.total_traveled_cm,
-            goals_reached=0,
-            goal_reached_cm=FINAL_ESTIMATE_GOAL_REACHED_CM,
-            telemetry_callback=log_metrics,
-            debug_logger=debug_logger,
-            debug_mode="dumblocate_drive_final",
-        )
-        viewer = run_state.viewer
-        if run_state.aborted:
-            return
-
-        print("Arrived near trilaterated LTV location.")
-        if not hold_with_ui_updates(
-            sock,
-            viewer=viewer,
-            planner=run_state.planner,
-            goal_xy=run_state.goal_xy,
-            obstacle_total=run_state.obstacle_total,
-            start_time=run_state.start_time,
-            total_traveled_cm=run_state.total_traveled_cm,
-            duration_s=PING_SETTLE_SEC,
-            status="Checking estimate ping...",
-            telemetry_callback=log_metrics,
-            debug_logger=debug_logger,
-            debug_mode="dumblocate_hold_verify_estimate",
-        ):
-            return
-        final_estimate_ping = sample_ping(sock, run_state.raw_telemetry)
-        print(
-            f"Ping at first estimate: {final_estimate_ping.ping_value:.3f} "
-            f"(strong-enough threshold {SECOND_TRILOCATION_STRONG_PING_THRESHOLD:.3f})"
-        )
-        if final_estimate_ping.ping_value < SECOND_TRILOCATION_STRONG_PING_THRESHOLD:
-            print("Estimate ping is still too weak. Running second trilateration round.")
-            second_center_xy = raw_world_m_to_local_cm(est_x_m, est_y_m)
-            second_samples, run_state, viewer, ok = collect_triangle_ping_samples(
+        print("Arrived near last known location.")
+        print(f"Distance from last known at first ping: {last_known_remaining_cm:.1f} cm")
+        current_anchor_xy = (goal_x, goal_y)
+        for round_config in TRILATERATION_ROUNDS:
+            estimate_xy_m, run_state, viewer, ok = run_trilateration_round(
                 sock,
-                center_xy=second_center_xy,
-                radius_m=SECOND_TRILOCATION_RADIUS_M,
+                round_config=round_config,
+                anchor_xy=current_anchor_xy,
                 run_state=run_state,
                 viewer=viewer,
-                telemetry_callback=log_metrics,
+                telemetry_callback=log_metrics if ENABLE_METRICS_LOGGING else None,
                 debug_logger=debug_logger,
-                debug_prefix="dumblocate_round2",
             )
-            if not ok or run_state.aborted:
+            if not ok or run_state.aborted or estimate_xy_m is None:
                 return
-            est_x_m, est_y_m = trilaterate(
-                (second_samples[0], second_samples[1], second_samples[2])
-            )
-            print(f"Second-round trilaterated LTV estimate: ({est_x_m:.3f}, {est_y_m:.3f}) m")
-            goal_x, goal_y = raw_world_m_to_local_cm(est_x_m, est_y_m)
+
             if not hold_with_ui_updates(
                 sock,
                 viewer=viewer,
                 planner=run_state.planner,
-                goal_xy=(goal_x, goal_y),
+                goal_xy=run_state.goal_xy,
                 obstacle_total=run_state.obstacle_total,
                 start_time=run_state.start_time,
                 total_traveled_cm=run_state.total_traveled_cm,
-                duration_s=0.5,
-                status="Preparing second final drive...",
-                telemetry_callback=log_metrics,
+                duration_s=PING_SETTLE_SEC,
+                status="Checking estimate ping...",
+                telemetry_callback=log_metrics if ENABLE_METRICS_LOGGING else None,
                 debug_logger=debug_logger,
-                debug_mode="dumblocate_hold_before_second_final_drive",
+                debug_mode="dumblocate_hold_verify_estimate",
             ):
                 return
-            run_state = drive_to_goal_locate(
-                sock,
-                final_goal_xy=(goal_x, goal_y),
-                goal_label=f"{est_x_m:.3f}, {est_y_m:.3f}",
-                viewer=viewer,
-                recorded_obstacle_points=run_state.recorded_obstacle_points,
-                obstacle_total=run_state.obstacle_total,
-                start_time=run_state.start_time,
-                step_idx=run_state.step_idx,
-                total_traveled_cm=run_state.total_traveled_cm,
-                goals_reached=0,
-                goal_reached_cm=FINAL_ESTIMATE_GOAL_REACHED_CM,
-                telemetry_callback=log_metrics,
-                debug_logger=debug_logger,
-                debug_mode="dumblocate_drive_second_final",
+
+            final_estimate_ping = sample_ping(sock, run_state.raw_telemetry)
+            print(
+                f"Ping at round {round_config.round_index} estimate: "
+                f"{final_estimate_ping.ping_value:.3f} "
+                f"(strong-enough threshold {SECOND_TRILOCATION_STRONG_PING_THRESHOLD:.3f})"
             )
-            viewer = run_state.viewer
-            if run_state.aborted:
-                return
-            print("Arrived near second-round trilaterated LTV location.")
-        else:
-            print("Estimate ping is strong enough. Skipping second trilateration round.")
+            if final_estimate_ping.ping_value >= SECOND_TRILOCATION_STRONG_PING_THRESHOLD:
+                if round_config.round_index > 1:
+                    print(
+                        f"Round {round_config.round_index} estimate ping is strong enough. "
+                        "Stopping additional trilateration rounds."
+                    )
+                else:
+                    print("Estimate ping is strong enough. Skipping additional trilateration rounds.")
+                break
+
+            if round_config.round_index == len(TRILATERATION_ROUNDS):
+                print("Estimate ping is still too weak after the final trilateration round.")
+                break
+
+            print(
+                f"Estimate ping is still too weak. Running trilateration round "
+                f"{round_config.round_index + 1}."
+            )
+            current_anchor_xy = raw_world_m_to_local_cm(*estimate_xy_m)
         run_completed = True
 
     except KeyboardInterrupt:

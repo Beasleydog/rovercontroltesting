@@ -1,0 +1,105 @@
+iso_time_utc	mono_s	mode	event	step_idx	goal_x_cm	goal_y_cm	rover_x_cm	rover_y_cm	goal_dist_cm	status
+2026-04-08T18:22:01Z	93730.093	dumblocate_drive_last_known	loop_tick	0	-17230.000	-36869.961	300.000	1179.980	41893.901	
+2026-04-08T18:22:01Z	93730.109	dumblocate_drive_last_known	goal_reached	0	-17230.000	-36869.961	300.000	1179.980	41893.901	
+2026-04-08T18:22:05Z	93734.921	dumblocate_round1_hold_ping_1	hold_tick		-17230.000	-36869.961	300.000	1179.980	41893.901	Collecting dumblocate_round1 ping 1...
+2026-04-08T18:22:06Z	93735.062	dumblocate_round1_hold_ping_1	hold_draw		-17230.000	-36869.961	300.000	1179.980	41893.901	Collecting dumblocate_round1 ping 1...
+2026-04-08T18:22:09Z	93738.171	dumblocate_round1_drive_ping_2	loop_tick	0	48.937	635.033	300.000	1179.980	600.000	
+2026-04-08T18:22:09Z	93738.187	dumblocate_round1_drive_ping_2	draw	0	48.937	635.033	300.000	1179.980	600.000	Running | Goals: 0
+2026-04-08T18:22:10Z	93739.921	dumblocate_round1_drive_ping_2	loop_tick	1	48.937	635.033	300.000	1179.980	600.000	
+2026-04-08T18:22:10Z	93739.937	dumblocate_round1_drive_ping_2	draw	1	48.937	635.033	300.000	1179.980	600.000	Running | Goals: 0
+2026-04-08T18:22:12Z	93741.656	dumblocate_round1_drive_ping_2	loop_tick	2	48.937	635.033	300.000	1170.020	590.968	
+2026-04-08T18:22:12Z	93741.671	dumblocate_round1_drive_ping_2	draw	2	48.937	635.033	300.000	1170.020	590.968	Running | Goals: 0
+2026-04-08T18:22:14Z	93743.406	dumblocate_round1_drive_ping_2	loop_tick	3	48.937	635.033	289.990	1110.058	532.687	
+2026-04-08T18:22:14Z	93743.406	dumblocate_round1_drive_ping_2	draw	3	48.937	635.033	289.990	1110.058	532.687	Running | Goals: 0
+2026-04-08T18:22:16Z	93745.156	dumblocate_round1_drive_ping_2	loop_tick	4	48.937	635.033	250.000	1010.058	425.523	
+2026-04-08T18:22:16Z	93745.171	dumblocate_round1_drive_ping_2	goal_reached	4	48.937	635.033	250.000	1010.058	425.523	
+2026-04-08T18:22:17Z	93746.703	dumblocate_round1_hold_ping_2	hold_tick		48.937	635.033	210.010	940.039	344.925	Collecting dumblocate_round1 ping 2...
+2026-04-08T18:22:17Z	93746.703	dumblocate_round1_hold_ping_2	hold_draw		48.937	635.033	210.010	940.039	344.925	Collecting dumblocate_round1 ping 2...
+2026-04-08T18:22:20Z	93749.765	dumblocate_round1_hold_after_ping_2	hold_tick		48.937	635.033	100.000	740.039	116.763	Preparing next move...
+2026-04-08T18:22:20Z	93749.765	dumblocate_round1_hold_after_ping_2	hold_draw		48.937	635.033	100.000	740.039	116.763	Preparing next move...
+2026-04-08T18:22:22Z	93751.359	dumblocate_round1_drive_ping_3	loop_tick	4	637.674	694.103	60.010	670.020	578.166	
+2026-04-08T18:22:22Z	93751.375	dumblocate_round1_drive_ping_3	draw	4	637.674	694.103	60.010	670.020	578.166	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:24Z	93753.109	dumblocate_round1_drive_ping_3	loop_tick	5	637.674	694.103	60.010	670.020	578.166	
+2026-04-08T18:22:24Z	93753.109	dumblocate_round1_drive_ping_3	draw	5	637.674	694.103	60.010	670.020	578.166	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:25Z	93754.859	dumblocate_round1_drive_ping_3	loop_tick	6	637.674	694.103	60.010	660.058	578.666	
+2026-04-08T18:22:25Z	93754.875	dumblocate_round1_drive_ping_3	draw	6	637.674	694.103	60.010	660.058	578.666	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:27Z	93756.593	dumblocate_round1_drive_ping_3	loop_tick	7	637.674	694.103	60.010	650.000	579.345	
+2026-04-08T18:22:27Z	93756.609	dumblocate_round1_drive_ping_3	draw	7	637.674	694.103	60.010	650.000	579.345	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:29Z	93758.343	dumblocate_round1_drive_ping_3	loop_tick	8	637.674	694.103	60.010	640.039	580.188	
+2026-04-08T18:22:29Z	93758.359	dumblocate_round1_drive_ping_3	draw	8	637.674	694.103	60.010	640.039	580.188	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:31Z	93760.093	dumblocate_round1_drive_ping_3	loop_tick	9	637.674	694.103	69.971	640.039	570.272	
+2026-04-08T18:22:31Z	93760.093	dumblocate_round1_drive_ping_3	draw	9	637.674	694.103	69.971	640.039	570.272	Recovering: reverse | Goals: 0
+2026-04-08T18:22:32Z	93761.828	dumblocate_round1_drive_ping_3	loop_tick	10	637.674	694.103	69.971	629.980	571.313	
+2026-04-08T18:22:32Z	93761.828	dumblocate_round1_drive_ping_3	draw	10	637.674	694.103	69.971	629.980	571.313	Recovering: reverse | Goals: 0
+2026-04-08T18:22:34Z	93763.578	dumblocate_round1_drive_ping_3	loop_tick	11	637.674	694.103	69.971	640.039	570.272	
+2026-04-08T18:22:34Z	93763.593	dumblocate_round1_drive_ping_3	draw	11	637.674	694.103	69.971	640.039	570.272	Recovering: reverse | Goals: 0
+2026-04-08T18:22:36Z	93765.312	dumblocate_round1_drive_ping_3	loop_tick	12	637.674	694.103	110.010	679.980	527.853	
+2026-04-08T18:22:36Z	93765.328	dumblocate_round1_drive_ping_3	draw	12	637.674	694.103	110.010	679.980	527.853	Recovering: reverse | Goals: 0
+2026-04-08T18:22:38Z	93767.062	dumblocate_round1_drive_ping_3	loop_tick	13	637.674	694.103	160.010	770.020	483.659	
+2026-04-08T18:22:38Z	93767.078	dumblocate_round1_drive_ping_3	draw	13	637.674	694.103	160.010	770.020	483.659	Recovering: reverse | Goals: 0
+2026-04-08T18:22:39Z	93768.796	dumblocate_round1_drive_ping_3	loop_tick	14	637.674	694.103	210.010	829.980	448.730	
+2026-04-08T18:22:39Z	93768.828	dumblocate_round1_drive_ping_3	goal_reached	14	637.674	694.103	210.010	829.980	448.730	
+2026-04-08T18:22:41Z	93770.343	dumblocate_round1_hold_ping_3	hold_tick		637.674	694.103	289.990	979.980	450.122	Collecting dumblocate_round1 ping 3...
+2026-04-08T18:22:41Z	93770.343	dumblocate_round1_hold_ping_3	hold_draw		637.674	694.103	289.990	979.980	450.122	Collecting dumblocate_round1 ping 3...
+2026-04-08T18:22:44Z	93773.406	dumblocate_hold_before_final_drive	hold_tick		2837.878	340.885	410.010	1210.058	2578.760	Preparing final drive...
+2026-04-08T18:22:44Z	93773.406	dumblocate_hold_before_final_drive	hold_draw		2837.878	340.885	410.010	1210.058	2578.760	Preparing final drive...
+2026-04-08T18:22:45Z	93775.000	dumblocate_drive_final	loop_tick	14	2837.878	340.885	450.000	1300.000	2573.298	
+2026-04-08T18:22:45Z	93775.000	dumblocate_drive_final	draw	14	2837.878	340.885	450.000	1300.000	2573.298	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:47Z	93776.765	dumblocate_drive_final	loop_tick	15	2837.878	340.885	460.010	1320.020	2571.568	
+2026-04-08T18:22:47Z	93776.765	dumblocate_drive_final	draw	15	2837.878	340.885	460.010	1320.020	2571.568	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:49Z	93778.468	dumblocate_drive_final	loop_tick	16	2837.878	340.885	460.010	1310.058	2567.791	
+2026-04-08T18:22:49Z	93778.468	dumblocate_drive_final	draw	16	2837.878	340.885	460.010	1310.058	2567.791	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:51Z	93780.203	dumblocate_drive_final	loop_tick	17	2837.878	340.885	460.010	1240.039	2542.191	
+2026-04-08T18:22:51Z	93780.218	dumblocate_drive_final	draw	17	2837.878	340.885	460.010	1240.039	2542.191	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:52Z	93782.015	dumblocate_drive_final	loop_tick	18	2837.878	340.885	469.971	1140.039	2499.126	
+2026-04-08T18:22:52Z	93782.031	dumblocate_drive_final	draw	18	2837.878	340.885	469.971	1140.039	2499.126	Heading correction: forward | Running | Goals: 0
+2026-04-08T18:22:54Z	93783.765	dumblocate_drive_final	loop_tick	19	2837.878	340.885	479.980	1079.980	2471.020	
+2026-04-08T18:22:54Z	93783.984	dumblocate_drive_final	draw	19	2837.878	340.885	479.980	1079.980	2471.020	Heading correction: reverse | Running | Goals: 0
+2026-04-08T18:22:56Z	93785.718	dumblocate_drive_final	loop_tick	20	2837.878	340.885	539.990	950.000	2377.248	
+2026-04-08T18:22:56Z	93785.734	dumblocate_drive_final	draw	20	2837.878	340.885	539.990	950.000	2377.248	Heading correction: reverse | Running | Goals: 0
+2026-04-08T18:22:58Z	93787.500	dumblocate_drive_final	loop_tick	21	2837.878	340.885	619.971	840.039	2273.382	
+2026-04-08T18:22:58Z	93787.515	dumblocate_drive_final	draw	21	2837.878	340.885	619.971	840.039	2273.382	Heading correction: reverse | Running | Goals: 0
+2026-04-08T18:23:00Z	93789.265	dumblocate_drive_final	loop_tick	22	2837.878	340.885	650.000	770.020	2229.566	
+2026-04-08T18:23:00Z	93789.281	dumblocate_drive_final	draw	22	2837.878	340.885	650.000	770.020	2229.566	Heading correction: reverse | Running | Goals: 0
+2026-04-08T18:23:01Z	93791.015	dumblocate_drive_final	loop_tick	23	2837.878	340.885	660.010	740.039	2214.144	
+2026-04-08T18:23:01Z	93791.031	dumblocate_drive_final	draw	23	2837.878	340.885	660.010	740.039	2214.144	Running | Goals: 0
+2026-04-08T18:23:03Z	93792.734	dumblocate_drive_final	loop_tick	24	2837.878	340.885	660.010	740.039	2214.144	
+2026-04-08T18:23:03Z	93792.734	dumblocate_drive_final	draw	24	2837.878	340.885	660.010	740.039	2214.144	Running | Goals: 0
+2026-04-08T18:23:05Z	93794.453	dumblocate_drive_final	loop_tick	25	2837.878	340.885	660.010	770.020	2219.744	
+2026-04-08T18:23:05Z	93794.468	dumblocate_drive_final	draw	25	2837.878	340.885	660.010	770.020	2219.744	Running | Goals: 0
+2026-04-08T18:23:07Z	93796.203	dumblocate_drive_final	loop_tick	26	2837.878	340.885	669.971	750.000	2206.172	
+2026-04-08T18:23:07Z	93796.203	dumblocate_drive_final	draw	26	2837.878	340.885	669.971	750.000	2206.172	Running | Goals: 0
+2026-04-08T18:23:08Z	93797.968	dumblocate_drive_final	loop_tick	27	2837.878	340.885	719.971	710.058	2149.842	
+2026-04-08T18:23:08Z	93797.984	dumblocate_drive_final	draw	27	2837.878	340.885	719.971	710.058	2149.842	Running | Goals: 0
+2026-04-08T18:23:10Z	93799.687	dumblocate_drive_final	loop_tick	28	2837.878	340.885	760.010	690.039	2106.999	
+2026-04-08T18:23:10Z	93799.687	dumblocate_drive_final	draw	28	2837.878	340.885	760.010	690.039	2106.999	Running | Goals: 0
+2026-04-08T18:23:12Z	93801.453	dumblocate_drive_final	loop_tick	29	2837.878	340.885	860.010	640.039	2000.364	
+2026-04-08T18:23:12Z	93801.453	dumblocate_drive_final	draw	29	2837.878	340.885	860.010	640.039	2000.364	Running | Goals: 0
+2026-04-08T18:23:14Z	93803.187	dumblocate_drive_final	loop_tick	30	2837.878	340.885	1000.000	590.039	1854.689	
+2026-04-08T18:23:14Z	93803.187	dumblocate_drive_final	draw	30	2837.878	340.885	1000.000	590.039	1854.689	Running | Goals: 0
+2026-04-08T18:23:15Z	93804.937	dumblocate_drive_final	loop_tick	31	2837.878	340.885	1079.980	570.020	1772.768	
+2026-04-08T18:23:15Z	93804.953	dumblocate_drive_final	draw	31	2837.878	340.885	1079.980	570.020	1772.768	Running | Goals: 0
+2026-04-08T18:23:17Z	93806.703	dumblocate_drive_final	loop_tick	32	2837.878	340.885	1239.990	529.980	1609.038	
+2026-04-08T18:23:17Z	93806.703	dumblocate_drive_final	draw	32	2837.878	340.885	1239.990	529.980	1609.038	Running | Goals: 0
+2026-04-08T18:23:19Z	93808.421	dumblocate_drive_final	loop_tick	33	2837.878	340.885	1410.010	479.980	1434.627	
+2026-04-08T18:23:19Z	93808.437	dumblocate_drive_final	draw	33	2837.878	340.885	1410.010	479.980	1434.627	Running | Goals: 0
+2026-04-08T18:23:21Z	93810.187	dumblocate_drive_final	loop_tick	34	2837.878	340.885	1589.990	420.020	1250.394	
+2026-04-08T18:23:21Z	93810.187	dumblocate_drive_final	draw	34	2837.878	340.885	1589.990	420.020	1250.394	Running | Goals: 0
+2026-04-08T18:23:22Z	93811.906	dumblocate_drive_final	loop_tick	35	2837.878	340.885	1669.971	390.039	1168.941	
+2026-04-08T18:23:22Z	93811.921	dumblocate_drive_final	draw	35	2837.878	340.885	1669.971	390.039	1168.941	Running | Goals: 0
+2026-04-08T18:23:24Z	93813.671	dumblocate_drive_final	loop_tick	36	2837.878	340.885	1839.990	340.039	997.888	
+2026-04-08T18:23:24Z	93813.687	dumblocate_drive_final	draw	36	2837.878	340.885	1839.990	340.039	997.888	Running | Goals: 0
+2026-04-08T18:23:26Z	93815.421	dumblocate_drive_final	loop_tick	37	2837.878	340.885	2019.971	300.000	818.928	
+2026-04-08T18:23:26Z	93815.437	dumblocate_drive_final	draw	37	2837.878	340.885	2019.971	300.000	818.928	Running | Goals: 0
+2026-04-08T18:23:28Z	93817.171	dumblocate_drive_final	loop_tick	38	2837.878	340.885	2200.000	270.020	641.802	
+2026-04-08T18:23:28Z	93817.187	dumblocate_drive_final	draw	38	2837.878	340.885	2200.000	270.020	641.802	Running | Goals: 0
+2026-04-08T18:23:29Z	93818.937	dumblocate_drive_final	loop_tick	39	2837.878	340.885	2300.000	260.058	543.917	
+2026-04-08T18:23:29Z	93818.953	dumblocate_drive_final	draw	39	2837.878	340.885	2300.000	260.058	543.917	Running | Goals: 0
+2026-04-08T18:23:31Z	93820.656	dumblocate_drive_final	loop_tick	40	2837.878	340.885	2500.000	279.980	343.323	
+2026-04-08T18:23:31Z	93820.671	dumblocate_drive_final	draw	40	2837.878	340.885	2500.000	279.980	343.323	Running | Goals: 0
+2026-04-08T18:23:33Z	93822.390	dumblocate_drive_final	loop_tick	41	2837.878	340.885	2710.010	320.020	129.559	
+2026-04-08T18:23:33Z	93822.390	dumblocate_drive_final	draw	41	2837.878	340.885	2710.010	320.020	129.559	Running | Goals: 0
+2026-04-08T18:23:35Z	93824.125	dumblocate_drive_final	loop_tick	42	2837.878	340.885	2919.971	370.020	87.109	
+2026-04-08T18:23:35Z	93824.140	dumblocate_drive_final	goal_reached	42	2837.878	340.885	2919.971	370.020	87.109	
+2026-04-08T18:23:36Z	93825.703	dumblocate_hold_verify_estimate	hold_tick		2837.878	340.885	3029.980	400.000	200.992	Checking estimate ping...
+2026-04-08T18:23:36Z	93825.703	dumblocate_hold_verify_estimate	hold_draw		2837.878	340.885	3029.980	400.000	200.992	Checking estimate ping...

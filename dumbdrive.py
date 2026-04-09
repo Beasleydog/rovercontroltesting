@@ -44,6 +44,7 @@ from rover_control import (
     fetch_rover_json,
     open_rover_socket,
     sanitize_lidar_scan,
+    send_occupancy_matrix,
     set_brakes,
     set_steering,
     set_throttle,
@@ -62,17 +63,17 @@ STARTUP_STUCK_GRACE_SEC = 5.0
 STATIONARY_MOVE_THRESHOLD_CM = 25.0
 STATIONARY_SPEED_THRESHOLD = 0.25
 ANGLE_CHECK_ENABLED = True
-STUCK_ANGLE_SPIKE_DEG = 10.0
-STUCK_ATTITUDE_DEG = 18.0
-STUCK_ANGLE_LOW_SPEED_THRESHOLD = 0.25
+STUCK_ANGLE_SPIKE_DEG = 7.0
+STUCK_ATTITUDE_DEG = 12.0
+STUCK_ANGLE_LOW_SPEED_THRESHOLD = 0.55
 SPEED_DROP_CHECK_ENABLED = True
-SPEED_DROP_WINDOW_SAMPLES = 5
-SPEED_DROP_TRIGGER_AVG = 0.5
-SPEED_DROP_PREVIOUS_MIN_AVG = 1.0
-SPEED_DROP_MIN_DELTA = 0.5
+SPEED_DROP_WINDOW_SAMPLES = 4
+SPEED_DROP_TRIGGER_AVG = 0.85
+SPEED_DROP_PREVIOUS_MIN_AVG = 0.75
+SPEED_DROP_MIN_DELTA = 0.25
 STUCK_REARM_EXIT_DISTANCE_CM = 45.0
-NORMAL_DRIVE_THROTTLE = 60.0
-MIN_FORWARD_DRIVE_THROTTLE = 80.0
+NORMAL_DRIVE_THROTTLE = 40.0
+MIN_FORWARD_DRIVE_THROTTLE = 40.0
 ENABLE_REVERSE_TO_TARGET = False
 REVERSE_TO_TARGET_WINDOW_DEG = 20.0
 RECOVERY_REVERSE_THROTTLE = -85.0
@@ -81,14 +82,16 @@ RECOVERY_BRAKE_SECONDS = 0
 RECOVERY_REVERSE_STEER_GAIN = 0.35
 ENABLE_HEADING_CORRECTION_OSCILLATION = True
 HEADING_CORRECTION_ENTRY_DEG = 55.0
-HEADING_CORRECTION_EXIT_DEG = 18.0
-HEADING_CORRECTION_PHASE_SEC = 7.0
+HEADING_CORRECTION_EXIT_DEG = 38.0
+HEADING_CORRECTION_PHASE_SEC = 3.0
 HEADING_CORRECTION_FORWARD_THROTTLE = 80.0
-HEADING_CORRECTION_REVERSE_THROTTLE = -80.0
+HEADING_CORRECTION_REVERSE_THROTTLE = -90.0
 HEADING_CORRECTION_STEERING_MAGNITUDE = 1.0
 HEADING_CORRECTION_DIRECTION_SWITCH_BRAKE_SEC = 0.2
 HEADING_CORRECTION_OVERTURN_EXIT_DEG = 5.0
 HEADING_CORRECTION_WORSENING_EXIT_DEG = 8.0
+OBSTACLE_TO_OSCILLATION_LOCK_WINDOW_SEC = 10.0
+OBSTACLE_LOCK_REQUIRED_OSCILLATION_SEC = 10.0
 STUCK_OBSTACLE_FORWARD_OFFSET_CM = ROVER_HALF_LENGTH_CM
 STUCK_OBSTACLE_BUMPER_ROW_SAMPLES = 7
 STUCK_HISTORY_FRAMES = 150
@@ -592,6 +595,9 @@ def drive_to_goal(
     heading_correction_phase_until: float | None = None
     heading_correction_entry_sign = 0.0
     heading_correction_best_abs_error = float("inf")
+    last_obstacle_marked_at: float | None = None
+    obstacle_lock_active = False
+    obstacle_lock_remaining_oscillation_sec = 0.0
     stuck_detection_armed = False
     stuck_rearm_pending = False
     stuck_rearm_origin_xy: tuple[float, float] | None = None
@@ -650,8 +656,6 @@ def drive_to_goal(
             planner = rebuild_planner_with_obstacles((x, y), (goal_x, goal_y), recorded_obstacle_points)
             path = compute_live_follow_path(planner, (x, y), (goal_x, goal_y))
             if viewer is not None:
-                viewer.view_center_x_cm = x
-                viewer.view_center_y_cm = y
                 viewer._update_scale(planner)
 
         obstacle_added = False
@@ -665,8 +669,6 @@ def drive_to_goal(
                 path = compute_live_follow_path(planner, (x, y), (goal_x, goal_y))
                 reverse_replan_pending = False
                 if viewer is not None:
-                    viewer.view_center_x_cm = x
-                    viewer.view_center_y_cm = y
                     viewer._update_scale(planner)
             stuck_detection_armed = False
             stuck_rearm_pending = True
@@ -717,6 +719,9 @@ def drive_to_goal(
                 and startup_grace_elapsed
                 and (now - stationary_anchor_time) >= STATIONARY_TIMEOUT_SEC
             ):
+                obstacle_lock_blocks_marking = (
+                    obstacle_lock_active and obstacle_lock_remaining_oscillation_sec > 0.0
+                )
                 if angle_stuck_detected:
                     print(
                         "Angle-check stuck trigger: "
@@ -731,17 +736,24 @@ def drive_to_goal(
                         f"speed={speed:.2f}"
                     )
                 stuck_pose_xyzh = (x, y, z, heading)
-                obstacle_total += mark_stuck_obstacles_from_history(
-                    planner,
-                    pose_history,
-                    stuck_pose_xyzh,
-                    debug_rows=obstacle_debug_rows,
-                )
-                recorded_obstacle_points.extend(
-                    (float(row["obstacle_x_cm"]), float(row["obstacle_y_cm"]))
-                    for row in obstacle_debug_rows
-                    if bool(row["placed"])
-                )
+                if obstacle_lock_blocks_marking:
+                    print(
+                        "Obstacle placement locked: waiting for more heading-correction "
+                        f"oscillation time ({obstacle_lock_remaining_oscillation_sec:.1f}s remaining)."
+                    )
+                else:
+                    obstacle_total += mark_stuck_obstacles_from_history(
+                        planner,
+                        pose_history,
+                        stuck_pose_xyzh,
+                        debug_rows=obstacle_debug_rows,
+                    )
+                    recorded_obstacle_points.extend(
+                        (float(row["obstacle_x_cm"]), float(row["obstacle_y_cm"]))
+                        for row in obstacle_debug_rows
+                        if bool(row["placed"])
+                    )
+                    last_obstacle_marked_at = now
                 reverse_until = now + RECOVERY_REVERSE_SECONDS
                 stuck_detection_armed = False
                 stuck_rearm_pending = False
@@ -751,8 +763,8 @@ def drive_to_goal(
                 if recovery_reset_watch_started_at is None:
                     recovery_reset_watch_started_at = now
                     recovery_reset_watch_origin_xy = (x, y)
-                obstacle_added = True
-                reverse_replan_pending = True
+                obstacle_added = not obstacle_lock_blocks_marking
+                reverse_replan_pending = not obstacle_lock_blocks_marking
         previous_pitch_deg = pitch_deg
         previous_roll_deg = roll_deg
         previous_avg_speed = current_avg_speed
@@ -879,8 +891,24 @@ def drive_to_goal(
                 heading_correction_phase_until = now + HEADING_CORRECTION_PHASE_SEC
                 heading_correction_entry_sign = heading_error_sign
                 heading_correction_best_abs_error = abs_heading_error
+                if (
+                    last_obstacle_marked_at is not None
+                    and (now - last_obstacle_marked_at) <= OBSTACLE_TO_OSCILLATION_LOCK_WINDOW_SEC
+                ):
+                    obstacle_lock_active = True
+                    obstacle_lock_remaining_oscillation_sec = max(
+                        obstacle_lock_remaining_oscillation_sec,
+                        OBSTACLE_LOCK_REQUIRED_OSCILLATION_SEC,
+                    )
 
             if heading_correction_active:
+                if obstacle_lock_active and obstacle_lock_remaining_oscillation_sec > 0.0:
+                    obstacle_lock_remaining_oscillation_sec = max(
+                        0.0,
+                        obstacle_lock_remaining_oscillation_sec - CONTROL_PERIOD_SEC,
+                    )
+                    if obstacle_lock_remaining_oscillation_sec <= 0.0:
+                        obstacle_lock_active = False
                 if heading_correction_phase_until is None:
                     heading_correction_phase_until = now + HEADING_CORRECTION_PHASE_SEC
                 elif now >= heading_correction_phase_until:
@@ -949,6 +977,14 @@ def drive_to_goal(
                 float(raw_telemetry.get("rover_pos_x", 0.0)),
                 float(raw_telemetry.get("rover_pos_y", 0.0)),
             )
+
+        send_occupancy_matrix(
+            sock,
+            planner=planner,
+            rover_xy=(x, y),
+            goal_xy=(shown_goal_x, shown_goal_y),
+            path_world=path,
+        )
 
         if viewer is not None:
             if not viewer.draw(**draw_kwargs):
@@ -1039,6 +1075,13 @@ def hold_with_ui_updates(
                 goal_distance_cm=waypoint_distance_cm,
                 status=status,
             )
+        send_occupancy_matrix(
+            sock,
+            planner=planner,
+            rover_xy=(x, y),
+            goal_xy=goal_xy,
+            path_world=path,
+        )
         if not viewer.draw(
             planner=planner,
             rover_xy=(x, y),

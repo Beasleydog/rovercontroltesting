@@ -210,7 +210,7 @@ HTML_PAGE = """<!doctype html>
       }
 
       const currentKey = goalKey(state);
-      const shouldRefit = currentKey !== camera.lastGoalKey || lastAutoFitMs === null || (nowMs - lastAutoFitMs) >= 15000;
+      const shouldRefit = currentKey !== camera.lastGoalKey || lastAutoFitMs === null;
       if (shouldRefit) {
         const fittedCenterX = (fitted.minX + fitted.maxX) * 0.5;
         const fittedCenterY = (fitted.minY + fitted.maxY) * 0.5;

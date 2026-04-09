@@ -22,6 +22,7 @@ import socketio
 SERVER_HOST = "172.24.119.191"
 SERVER_PORT = 14141
 SOCKET_TIMEOUT = 1.0
+REMOTE_INITIAL_TELEMETRY_TIMEOUT = 3.0
 REMOTE_SERVER_ENABLED = False
 REMOTE_SERVER_URL = "http://127.0.0.1:5001"
 
@@ -69,6 +70,8 @@ class RemoteRoverClient:
         self.url = str(url)
         self.sio = socketio.Client(reconnection=True)
         self._state_lock = threading.Lock()
+        self._matrix_emit_lock = threading.Lock()
+        self._last_matrix_emit_monotonic = 0.0
         self._connected_event = threading.Event()
         self._rover_event = threading.Event()
         self._ltv_event = threading.Event()
@@ -141,7 +144,12 @@ class RemoteRoverClient:
 
     def get_json_for_command(self, command: int, timeout_seconds: float = SOCKET_TIMEOUT) -> dict:
         attr_name, ready_event, label = self._payload_event_for_get(command)
-        if not ready_event.wait(timeout_seconds):
+        with self._state_lock:
+            payload = getattr(self, attr_name)
+            if isinstance(payload, dict):
+                return dict(payload)
+        effective_timeout = max(float(timeout_seconds), REMOTE_INITIAL_TELEMETRY_TIMEOUT)
+        if not ready_event.wait(effective_timeout):
             raise RuntimeError(f"Timed out waiting for remote {label} telemetry from {self.url}")
         with self._state_lock:
             payload = getattr(self, attr_name)
@@ -215,8 +223,63 @@ def send_get_command(sock: socket.socket, command: int) -> bytes:
     return send_packet(sock, packet)
 
 
+def send_occupancy_matrix(
+    sock: socket.socket,
+    *,
+    planner,
+    rover_xy: tuple[float, float],
+    goal_xy: tuple[float, float] | None = None,
+    path_world: list[tuple[float, float]] | None = None,
+    min_interval_seconds: float = 1.0,
+) -> bool:
+    if not isinstance(sock, RemoteRoverClient):
+        return False
+
+    now = time.monotonic()
+    with sock._matrix_emit_lock:
+        if (now - sock._last_matrix_emit_monotonic) < float(min_interval_seconds):
+            return False
+
+        width = int(getattr(planner, "width_cells", 0))
+        height = int(getattr(planner, "height_cells", 0))
+        grid = getattr(planner, "grid", None)
+        if width <= 0 or height <= 0 or not isinstance(grid, list):
+            return False
+
+        matrix = [
+            [
+                1 if int(grid[row_idx][col_idx]) != 0 else 0
+                for col_idx in range(width)
+            ]
+            for row_idx in range(height)
+        ]
+
+        for point_x, point_y in path_world or []:
+            cell_x, cell_y = planner.world_to_cell(float(point_x), float(point_y))
+            if 0 <= cell_x < width and 0 <= cell_y < height:
+                matrix[cell_y][cell_x] = 2
+
+        if goal_xy is not None:
+            goal_cell_x, goal_cell_y = planner.world_to_cell(float(goal_xy[0]), float(goal_xy[1]))
+            if 0 <= goal_cell_x < width and 0 <= goal_cell_y < height:
+                matrix[goal_cell_y][goal_cell_x] = 3
+
+        rover_cell_x, rover_cell_y = planner.world_to_cell(float(rover_xy[0]), float(rover_xy[1]))
+        if 0 <= rover_cell_x < width and 0 <= rover_cell_y < height:
+            matrix[rover_cell_y][rover_cell_x] = 4
+
+        emitted = sock.emit("matrix", matrix)
+        if emitted:
+            sock._last_matrix_emit_monotonic = now
+        return emitted
+
+
 def extract_json_bytes(response: bytes) -> bytes:
-    payload = response[8:] if len(response) > 8 else response
+    stripped = response.lstrip()
+    if stripped.startswith(b"{"):
+        payload = stripped
+    else:
+        payload = response[8:] if len(response) > 8 else response
     start = payload.find(b"{")
     if start == -1:
         raise RuntimeError(f"Could not locate JSON payload in response: {response[:32]!r}")
@@ -274,10 +337,16 @@ def is_dust_connected(sock: socket.socket) -> bool:
 def wait_for_dust(sock: socket.socket, timeout_seconds: float = 15.0, poll_seconds: float = 0.5) -> bool:
     end_time = time.monotonic() + timeout_seconds
     while time.monotonic() < end_time:
-        if is_dust_connected(sock):
-            return True
+        try:
+            if is_dust_connected(sock):
+                return True
+        except RuntimeError:
+            pass
         time.sleep(max(0.0, poll_seconds))
-    return is_dust_connected(sock)
+    try:
+        return is_dust_connected(sock)
+    except RuntimeError:
+        return False
 
 
 def set_throttle(sock: socket.socket, value: float) -> bool:
