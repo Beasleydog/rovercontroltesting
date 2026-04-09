@@ -1,0 +1,529 @@
+iso_time_utc	mono_s	mode	event	step_idx	goal_x_cm	goal_y_cm	rover_x_cm	rover_y_cm	goal_dist_cm	status
+2026-04-09T00:14:35Z	114898.568	dumblocate_drive_last_known	loop_tick	0	-17230.000	-36869.961	-16170.020	-27479.980	9449.619	
+2026-04-09T00:14:35Z	114898.586	dumblocate_drive_last_known	goal_reached	0	-17230.000	-36869.961	-16170.020	-27479.980	9449.619	
+2026-04-09T00:14:35Z	114898.667	dumblocate_round1_hold_ping_1	hold_tick		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:35Z	114898.671	dumblocate_round1_hold_ping_1	hold_draw		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:36Z	114898.999	dumblocate_round1_hold_ping_1	hold_tick		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:36Z	114899.025	dumblocate_round1_hold_ping_1	hold_draw		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:36Z	114899.360	dumblocate_round1_hold_ping_1	hold_tick		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:36Z	114899.363	dumblocate_round1_hold_ping_1	hold_draw		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:36Z	114899.687	dumblocate_round1_hold_ping_1	hold_tick		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:36Z	114899.690	dumblocate_round1_hold_ping_1	hold_draw		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:37Z	114899.897	dumblocate_round1_hold_ping_1	hold_tick		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:37Z	114899.899	dumblocate_round1_hold_ping_1	hold_draw		-17230.000	-36869.961	-16170.020	-27479.980	9449.619	Collecting dumblocate_round1 ping 1...
+2026-04-09T00:14:38Z	114901.502	dumblocate_round1_drive_ping_2	loop_tick	0	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:38Z	114901.516	dumblocate_round1_drive_ping_2	draw	0	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:38Z	114901.719	dumblocate_round1_drive_ping_2	loop_tick	1	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:38Z	114901.729	dumblocate_round1_drive_ping_2	draw	1	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:39Z	114901.934	dumblocate_round1_drive_ping_2	loop_tick	2	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:39Z	114901.952	dumblocate_round1_drive_ping_2	draw	2	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:39Z	114902.155	dumblocate_round1_drive_ping_2	loop_tick	3	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:39Z	114902.162	dumblocate_round1_drive_ping_2	draw	3	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:39Z	114902.365	dumblocate_round1_drive_ping_2	loop_tick	4	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:39Z	114902.373	dumblocate_round1_drive_ping_2	draw	4	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:39Z	114902.575	dumblocate_round1_drive_ping_2	loop_tick	5	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:39Z	114902.585	dumblocate_round1_drive_ping_2	draw	5	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:40Z	114902.788	dumblocate_round1_drive_ping_2	loop_tick	6	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:40Z	114902.806	dumblocate_round1_drive_ping_2	draw	6	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:40Z	114903.010	dumblocate_round1_drive_ping_2	loop_tick	7	-16237.323	-28076.194	-16170.020	-27479.980	600.000	
+2026-04-09T00:14:40Z	114903.037	dumblocate_round1_drive_ping_2	draw	7	-16237.323	-28076.194	-16170.020	-27479.980	600.000	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:40Z	114903.249	dumblocate_round1_drive_ping_2	loop_tick	8	-16237.323	-28076.194	-16160.010	-27479.980	601.205	
+2026-04-09T00:14:40Z	114903.257	dumblocate_round1_drive_ping_2	draw	8	-16237.323	-28076.194	-16160.010	-27479.980	601.205	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:40Z	114903.459	dumblocate_round1_drive_ping_2	loop_tick	9	-16237.323	-28076.194	-16160.010	-27479.980	601.205	
+2026-04-09T00:14:40Z	114903.468	dumblocate_round1_drive_ping_2	draw	9	-16237.323	-28076.194	-16160.010	-27479.980	601.205	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:40Z	114903.672	dumblocate_round1_drive_ping_2	loop_tick	10	-16237.323	-28076.194	-16160.010	-27479.980	601.205	
+2026-04-09T00:14:40Z	114903.692	dumblocate_round1_drive_ping_2	draw	10	-16237.323	-28076.194	-16160.010	-27479.980	601.205	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:41Z	114903.897	dumblocate_round1_drive_ping_2	loop_tick	11	-16237.323	-28076.194	-16160.010	-27479.980	601.205	
+2026-04-09T00:14:41Z	114903.903	dumblocate_round1_drive_ping_2	draw	11	-16237.323	-28076.194	-16160.010	-27479.980	601.205	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:41Z	114904.115	dumblocate_round1_drive_ping_2	loop_tick	12	-16237.323	-28076.194	-16160.010	-27479.980	601.205	
+2026-04-09T00:14:41Z	114904.143	dumblocate_round1_drive_ping_2	draw	12	-16237.323	-28076.194	-16160.010	-27479.980	601.205	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:41Z	114904.347	dumblocate_round1_drive_ping_2	loop_tick	13	-16237.323	-28076.194	-16150.000	-27470.020	612.432	
+2026-04-09T00:14:41Z	114904.357	dumblocate_round1_drive_ping_2	draw	13	-16237.323	-28076.194	-16150.000	-27470.020	612.432	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:41Z	114904.559	dumblocate_round1_drive_ping_2	loop_tick	14	-16237.323	-28076.194	-16150.000	-27470.020	612.432	
+2026-04-09T00:14:42Z	114904.790	dumblocate_round1_drive_ping_2	draw	14	-16237.323	-28076.194	-16150.000	-27470.020	612.432	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:42Z	114904.993	dumblocate_round1_drive_ping_2	loop_tick	15	-16237.323	-28076.194	-16150.000	-27470.020	612.432	
+2026-04-09T00:14:42Z	114905.017	dumblocate_round1_drive_ping_2	draw	15	-16237.323	-28076.194	-16150.000	-27470.020	612.432	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:42Z	114905.219	dumblocate_round1_drive_ping_2	loop_tick	16	-16237.323	-28076.194	-16150.000	-27470.020	612.432	
+2026-04-09T00:14:42Z	114905.237	dumblocate_round1_drive_ping_2	draw	16	-16237.323	-28076.194	-16150.000	-27470.020	612.432	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:42Z	114905.440	dumblocate_round1_drive_ping_2	loop_tick	17	-16237.323	-28076.194	-16120.020	-27459.961	627.298	
+2026-04-09T00:14:42Z	114905.447	dumblocate_round1_drive_ping_2	draw	17	-16237.323	-28076.194	-16120.020	-27459.961	627.298	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:42Z	114905.650	dumblocate_round1_drive_ping_2	loop_tick	18	-16237.323	-28076.194	-16120.020	-27459.961	627.298	
+2026-04-09T00:14:42Z	114905.682	dumblocate_round1_drive_ping_2	draw	18	-16237.323	-28076.194	-16120.020	-27459.961	627.298	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:43Z	114905.884	dumblocate_round1_drive_ping_2	loop_tick	19	-16237.323	-28076.194	-16120.020	-27459.961	627.298	
+2026-04-09T00:14:43Z	114905.893	dumblocate_round1_drive_ping_2	draw	19	-16237.323	-28076.194	-16120.020	-27459.961	627.298	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:43Z	114906.095	dumblocate_round1_drive_ping_2	loop_tick	20	-16237.323	-28076.194	-16120.020	-27459.961	627.298	
+2026-04-09T00:14:43Z	114906.100	dumblocate_round1_drive_ping_2	draw	20	-16237.323	-28076.194	-16120.020	-27459.961	627.298	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:43Z	114906.302	dumblocate_round1_drive_ping_2	loop_tick	21	-16237.323	-28076.194	-16120.020	-27459.961	627.298	
+2026-04-09T00:14:43Z	114906.325	dumblocate_round1_drive_ping_2	draw	21	-16237.323	-28076.194	-16120.020	-27459.961	627.298	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:43Z	114906.527	dumblocate_round1_drive_ping_2	loop_tick	22	-16237.323	-28076.194	-16089.990	-27450.000	643.293	
+2026-04-09T00:14:43Z	114906.556	dumblocate_round1_drive_ping_2	draw	22	-16237.323	-28076.194	-16089.990	-27450.000	643.293	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:43Z	114906.758	dumblocate_round1_drive_ping_2	loop_tick	23	-16237.323	-28076.194	-16089.990	-27450.000	643.293	
+2026-04-09T00:14:44Z	114906.784	dumblocate_round1_drive_ping_2	draw	23	-16237.323	-28076.194	-16089.990	-27450.000	643.293	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:44Z	114906.987	dumblocate_round1_drive_ping_2	loop_tick	24	-16237.323	-28076.194	-16089.990	-27450.000	643.293	
+2026-04-09T00:14:44Z	114907.012	dumblocate_round1_drive_ping_2	draw	24	-16237.323	-28076.194	-16089.990	-27450.000	643.293	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:44Z	114907.215	dumblocate_round1_drive_ping_2	loop_tick	25	-16237.323	-28076.194	-16089.990	-27450.000	643.293	
+2026-04-09T00:14:44Z	114907.259	dumblocate_round1_drive_ping_2	draw	25	-16237.323	-28076.194	-16089.990	-27450.000	643.293	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:44Z	114907.462	dumblocate_round1_drive_ping_2	loop_tick	26	-16237.323	-28076.194	-16080.029	-27439.942	655.407	
+2026-04-09T00:14:44Z	114907.493	dumblocate_round1_drive_ping_2	draw	26	-16237.323	-28076.194	-16080.029	-27439.942	655.407	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:44Z	114907.695	dumblocate_round1_drive_ping_2	loop_tick	27	-16237.323	-28076.194	-16080.029	-27439.942	655.407	
+2026-04-09T00:14:45Z	114907.972	dumblocate_round1_drive_ping_2	draw	27	-16237.323	-28076.194	-16080.029	-27439.942	655.407	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:45Z	114908.174	dumblocate_round1_drive_ping_2	loop_tick	28	-16237.323	-28076.194	-16080.029	-27439.942	655.407	
+2026-04-09T00:14:45Z	114908.206	dumblocate_round1_drive_ping_2	draw	28	-16237.323	-28076.194	-16080.029	-27439.942	655.407	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:45Z	114908.408	dumblocate_round1_drive_ping_2	loop_tick	29	-16237.323	-28076.194	-16080.029	-27450.000	645.647	
+2026-04-09T00:14:45Z	114908.414	dumblocate_round1_drive_ping_2	draw	29	-16237.323	-28076.194	-16080.029	-27450.000	645.647	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:45Z	114908.616	dumblocate_round1_drive_ping_2	loop_tick	30	-16237.323	-28076.194	-16080.029	-27450.000	645.647	
+2026-04-09T00:14:45Z	114908.627	dumblocate_round1_drive_ping_2	draw	30	-16237.323	-28076.194	-16080.029	-27450.000	645.647	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:46Z	114908.829	dumblocate_round1_drive_ping_2	loop_tick	31	-16237.323	-28076.194	-16080.029	-27450.000	645.647	
+2026-04-09T00:14:46Z	114908.851	dumblocate_round1_drive_ping_2	draw	31	-16237.323	-28076.194	-16080.029	-27450.000	645.647	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:46Z	114909.054	dumblocate_round1_drive_ping_2	loop_tick	32	-16237.323	-28076.194	-16080.029	-27450.000	645.647	
+2026-04-09T00:14:46Z	114909.101	dumblocate_round1_drive_ping_2	draw	32	-16237.323	-28076.194	-16080.029	-27450.000	645.647	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:46Z	114909.303	dumblocate_round1_drive_ping_2	loop_tick	33	-16237.323	-28076.194	-16100.000	-27459.961	631.348	
+2026-04-09T00:14:46Z	114909.310	dumblocate_round1_drive_ping_2	draw	33	-16237.323	-28076.194	-16100.000	-27459.961	631.348	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:46Z	114909.514	dumblocate_round1_drive_ping_2	loop_tick	34	-16237.323	-28076.194	-16100.000	-27459.961	631.348	
+2026-04-09T00:14:46Z	114909.525	dumblocate_round1_drive_ping_2	draw	34	-16237.323	-28076.194	-16100.000	-27459.961	631.348	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:46Z	114909.727	dumblocate_round1_drive_ping_2	loop_tick	35	-16237.323	-28076.194	-16100.000	-27459.961	631.348	
+2026-04-09T00:14:46Z	114909.749	dumblocate_round1_drive_ping_2	draw	35	-16237.323	-28076.194	-16100.000	-27459.961	631.348	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:47Z	114909.952	dumblocate_round1_drive_ping_2	loop_tick	36	-16237.323	-28076.194	-16100.000	-27459.961	631.348	
+2026-04-09T00:14:47Z	114909.971	dumblocate_round1_drive_ping_2	draw	36	-16237.323	-28076.194	-16100.000	-27459.961	631.348	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:47Z	114910.173	dumblocate_round1_drive_ping_2	loop_tick	37	-16237.323	-28076.194	-16100.000	-27459.961	631.348	
+2026-04-09T00:14:47Z	114910.193	dumblocate_round1_drive_ping_2	draw	37	-16237.323	-28076.194	-16100.000	-27459.961	631.348	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:47Z	114910.412	dumblocate_round1_drive_ping_2	loop_tick	38	-16237.323	-28076.194	-16089.990	-27459.961	633.601	
+2026-04-09T00:14:47Z	114910.420	dumblocate_round1_drive_ping_2	draw	38	-16237.323	-28076.194	-16089.990	-27459.961	633.601	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:47Z	114910.623	dumblocate_round1_drive_ping_2	loop_tick	39	-16237.323	-28076.194	-16089.990	-27459.961	633.601	
+2026-04-09T00:14:47Z	114910.644	dumblocate_round1_drive_ping_2	draw	39	-16237.323	-28076.194	-16089.990	-27459.961	633.601	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:48Z	114910.846	dumblocate_round1_drive_ping_2	loop_tick	40	-16237.323	-28076.194	-16089.990	-27459.961	633.601	
+2026-04-09T00:14:48Z	114911.106	dumblocate_round1_drive_ping_2	draw	40	-16237.323	-28076.194	-16089.990	-27459.961	633.601	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:48Z	114911.308	dumblocate_round1_drive_ping_2	loop_tick	41	-16237.323	-28076.194	-16060.010	-27450.000	650.814	
+2026-04-09T00:14:48Z	114911.315	dumblocate_round1_drive_ping_2	draw	41	-16237.323	-28076.194	-16060.010	-27450.000	650.814	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:48Z	114911.517	dumblocate_round1_drive_ping_2	loop_tick	42	-16237.323	-28076.194	-16060.010	-27450.000	650.814	
+2026-04-09T00:14:48Z	114911.526	dumblocate_round1_drive_ping_2	draw	42	-16237.323	-28076.194	-16060.010	-27450.000	650.814	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:48Z	114911.727	dumblocate_round1_drive_ping_2	loop_tick	43	-16237.323	-28076.194	-16060.010	-27450.000	650.814	
+2026-04-09T00:14:48Z	114911.751	dumblocate_round1_drive_ping_2	draw	43	-16237.323	-28076.194	-16060.010	-27450.000	650.814	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:49Z	114911.953	dumblocate_round1_drive_ping_2	loop_tick	44	-16237.323	-28076.194	-16060.010	-27450.000	650.814	
+2026-04-09T00:14:49Z	114911.979	dumblocate_round1_drive_ping_2	draw	44	-16237.323	-28076.194	-16060.010	-27450.000	650.814	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:49Z	114912.182	dumblocate_round1_drive_ping_2	loop_tick	45	-16237.323	-28076.194	-16060.010	-27450.000	650.814	
+2026-04-09T00:14:49Z	114912.226	dumblocate_round1_drive_ping_2	draw	45	-16237.323	-28076.194	-16060.010	-27450.000	650.814	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:49Z	114912.429	dumblocate_round1_drive_ping_2	loop_tick	46	-16237.323	-28076.194	-16030.029	-27439.942	669.169	
+2026-04-09T00:14:49Z	114912.439	dumblocate_round1_drive_ping_2	draw	46	-16237.323	-28076.194	-16030.029	-27439.942	669.169	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:49Z	114912.642	dumblocate_round1_drive_ping_2	loop_tick	47	-16237.323	-28076.194	-16030.029	-27439.942	669.169	
+2026-04-09T00:14:49Z	114912.673	dumblocate_round1_drive_ping_2	draw	47	-16237.323	-28076.194	-16030.029	-27439.942	669.169	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:50Z	114912.875	dumblocate_round1_drive_ping_2	loop_tick	48	-16237.323	-28076.194	-16030.029	-27439.942	669.169	
+2026-04-09T00:14:50Z	114912.892	dumblocate_round1_drive_ping_2	draw	48	-16237.323	-28076.194	-16030.029	-27439.942	669.169	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:50Z	114913.095	dumblocate_round1_drive_ping_2	loop_tick	49	-16237.323	-28076.194	-16030.029	-27439.942	669.169	
+2026-04-09T00:14:50Z	114913.118	dumblocate_round1_drive_ping_2	draw	49	-16237.323	-28076.194	-16030.029	-27439.942	669.169	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:50Z	114913.321	dumblocate_round1_drive_ping_2	loop_tick	50	-16237.323	-28076.194	-16030.029	-27439.942	669.169	
+2026-04-09T00:14:50Z	114913.352	dumblocate_round1_drive_ping_2	draw	50	-16237.323	-28076.194	-16030.029	-27439.942	669.169	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:50Z	114913.555	dumblocate_round1_drive_ping_2	loop_tick	51	-16237.323	-28076.194	-16020.020	-27439.942	672.337	
+2026-04-09T00:14:50Z	114913.564	dumblocate_round1_drive_ping_2	draw	51	-16237.323	-28076.194	-16020.020	-27439.942	672.337	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:51Z	114913.767	dumblocate_round1_drive_ping_2	loop_tick	52	-16237.323	-28076.194	-16020.020	-27439.942	672.337	
+2026-04-09T00:14:51Z	114913.804	dumblocate_round1_drive_ping_2	draw	52	-16237.323	-28076.194	-16020.020	-27439.942	672.337	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:51Z	114914.006	dumblocate_round1_drive_ping_2	loop_tick	53	-16237.323	-28076.194	-16020.020	-27439.942	672.337	
+2026-04-09T00:14:51Z	114914.248	dumblocate_round1_drive_ping_2	draw	53	-16237.323	-28076.194	-16020.020	-27439.942	672.337	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:51Z	114914.451	dumblocate_round1_drive_ping_2	loop_tick	54	-16237.323	-28076.194	-16020.020	-27439.942	672.337	
+2026-04-09T00:14:51Z	114914.463	dumblocate_round1_drive_ping_2	draw	54	-16237.323	-28076.194	-16020.020	-27439.942	672.337	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:51Z	114914.665	dumblocate_round1_drive_ping_2	loop_tick	55	-16237.323	-28076.194	-16020.020	-27439.942	672.337	
+2026-04-09T00:14:51Z	114914.689	dumblocate_round1_drive_ping_2	draw	55	-16237.323	-28076.194	-16020.020	-27439.942	672.337	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:52Z	114914.892	dumblocate_round1_drive_ping_2	loop_tick	56	-16237.323	-28076.194	-16020.020	-27439.942	672.337	
+2026-04-09T00:14:52Z	114914.944	dumblocate_round1_drive_ping_2	draw	56	-16237.323	-28076.194	-16020.020	-27439.942	672.337	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:52Z	114915.148	dumblocate_round1_drive_ping_2	loop_tick	57	-16237.323	-28076.194	-16020.020	-27439.942	672.337	
+2026-04-09T00:14:52Z	114915.171	dumblocate_round1_drive_ping_2	draw	57	-16237.323	-28076.194	-16020.020	-27439.942	672.337	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:52Z	114915.373	dumblocate_round1_drive_ping_2	loop_tick	58	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:52Z	114915.391	dumblocate_round1_drive_ping_2	draw	58	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:52Z	114915.594	dumblocate_round1_drive_ping_2	loop_tick	59	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:52Z	114915.622	dumblocate_round1_drive_ping_2	draw	59	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:53Z	114915.825	dumblocate_round1_drive_ping_2	loop_tick	60	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:53Z	114915.848	dumblocate_round1_drive_ping_2	draw	60	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:53Z	114916.052	dumblocate_round1_drive_ping_2	loop_tick	61	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:53Z	114916.081	dumblocate_round1_drive_ping_2	draw	61	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:53Z	114916.298	dumblocate_round1_drive_ping_2	loop_tick	62	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:53Z	114916.305	dumblocate_round1_drive_ping_2	draw	62	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:53Z	114916.507	dumblocate_round1_drive_ping_2	loop_tick	63	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:53Z	114916.531	dumblocate_round1_drive_ping_2	draw	63	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:53Z	114916.734	dumblocate_round1_drive_ping_2	loop_tick	64	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:53Z	114916.757	dumblocate_round1_drive_ping_2	draw	64	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:54Z	114916.960	dumblocate_round1_drive_ping_2	loop_tick	65	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:54Z	114916.988	dumblocate_round1_drive_ping_2	draw	65	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:54Z	114917.191	dumblocate_round1_drive_ping_2	loop_tick	66	-16237.323	-28076.194	-16030.029	-27450.000	659.613	
+2026-04-09T00:14:54Z	114917.418	dumblocate_round1_drive_ping_2	draw	66	-16237.323	-28076.194	-16030.029	-27450.000	659.613	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:54Z	114917.621	dumblocate_round1_drive_ping_2	loop_tick	67	-16237.323	-28076.194	-16010.010	-27450.000	666.175	
+2026-04-09T00:14:54Z	114917.647	dumblocate_round1_drive_ping_2	draw	67	-16237.323	-28076.194	-16010.010	-27450.000	666.175	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:55Z	114917.850	dumblocate_round1_drive_ping_2	loop_tick	68	-16237.323	-28076.194	-16010.010	-27450.000	666.175	
+2026-04-09T00:14:55Z	114917.857	dumblocate_round1_drive_ping_2	draw	68	-16237.323	-28076.194	-16010.010	-27450.000	666.175	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:55Z	114918.060	dumblocate_round1_drive_ping_2	loop_tick	69	-16237.323	-28076.194	-16010.010	-27450.000	666.175	
+2026-04-09T00:14:55Z	114918.081	dumblocate_round1_drive_ping_2	draw	69	-16237.323	-28076.194	-16010.010	-27450.000	666.175	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:55Z	114918.284	dumblocate_round1_drive_ping_2	loop_tick	70	-16237.323	-28076.194	-16010.010	-27450.000	666.175	
+2026-04-09T00:14:55Z	114918.320	dumblocate_round1_drive_ping_2	draw	70	-16237.323	-28076.194	-16010.010	-27450.000	666.175	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:55Z	114918.523	dumblocate_round1_drive_ping_2	loop_tick	71	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:14:55Z	114918.569	dumblocate_round1_drive_ping_2	draw	71	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:56Z	114918.772	dumblocate_round1_drive_ping_2	loop_tick	72	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:14:56Z	114918.800	dumblocate_round1_drive_ping_2	draw	72	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:56Z	114919.003	dumblocate_round1_drive_ping_2	loop_tick	73	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:14:56Z	114919.030	dumblocate_round1_drive_ping_2	draw	73	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:56Z	114919.233	dumblocate_round1_drive_ping_2	loop_tick	74	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:14:56Z	114919.266	dumblocate_round1_drive_ping_2	draw	74	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:56Z	114919.469	dumblocate_round1_drive_ping_2	loop_tick	75	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:56Z	114919.493	dumblocate_round1_drive_ping_2	draw	75	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:56Z	114919.695	dumblocate_round1_drive_ping_2	loop_tick	76	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:56Z	114919.717	dumblocate_round1_drive_ping_2	draw	76	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:57Z	114919.921	dumblocate_round1_drive_ping_2	loop_tick	77	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:57Z	114919.948	dumblocate_round1_drive_ping_2	draw	77	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:57Z	114920.150	dumblocate_round1_drive_ping_2	loop_tick	78	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:57Z	114920.169	dumblocate_round1_drive_ping_2	draw	78	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:14:57Z	114920.374	dumblocate_round1_drive_ping_2	loop_tick	79	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:57Z	114920.597	dumblocate_round1_drive_ping_2	draw	79	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:58Z	114920.799	dumblocate_round1_drive_ping_2	loop_tick	80	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:58Z	114920.827	dumblocate_round1_drive_ping_2	draw	80	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:58Z	114921.030	dumblocate_round1_drive_ping_2	loop_tick	81	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:58Z	114921.052	dumblocate_round1_drive_ping_2	draw	81	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:58Z	114921.254	dumblocate_round1_drive_ping_2	loop_tick	82	-16237.323	-28076.194	-15950.000	-27450.000	688.965	
+2026-04-09T00:14:58Z	114921.276	dumblocate_round1_drive_ping_2	draw	82	-16237.323	-28076.194	-15950.000	-27450.000	688.965	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:58Z	114921.478	dumblocate_round1_drive_ping_2	loop_tick	83	-16237.323	-28076.194	-15960.010	-27459.961	675.755	
+2026-04-09T00:14:58Z	114921.488	dumblocate_round1_drive_ping_2	draw	83	-16237.323	-28076.194	-15960.010	-27459.961	675.755	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:58Z	114921.691	dumblocate_round1_drive_ping_2	loop_tick	84	-16237.323	-28076.194	-15960.010	-27459.961	675.755	
+2026-04-09T00:14:58Z	114921.729	dumblocate_round1_drive_ping_2	draw	84	-16237.323	-28076.194	-15960.010	-27459.961	675.755	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:59Z	114921.932	dumblocate_round1_drive_ping_2	loop_tick	85	-16237.323	-28076.194	-15960.010	-27459.961	675.755	
+2026-04-09T00:14:59Z	114921.941	dumblocate_round1_drive_ping_2	draw	85	-16237.323	-28076.194	-15960.010	-27459.961	675.755	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:59Z	114922.144	dumblocate_round1_drive_ping_2	loop_tick	86	-16237.323	-28076.194	-15960.010	-27459.961	675.755	
+2026-04-09T00:14:59Z	114922.168	dumblocate_round1_drive_ping_2	draw	86	-16237.323	-28076.194	-15960.010	-27459.961	675.755	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:59Z	114922.377	dumblocate_round1_drive_ping_2	loop_tick	87	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:14:59Z	114922.384	dumblocate_round1_drive_ping_2	draw	87	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:14:59Z	114922.587	dumblocate_round1_drive_ping_2	loop_tick	88	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:14:59Z	114922.604	dumblocate_round1_drive_ping_2	draw	88	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:00Z	114922.809	dumblocate_round1_drive_ping_2	loop_tick	89	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:15:00Z	114922.835	dumblocate_round1_drive_ping_2	draw	89	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Recovering: reverse | Goals: 0
+2026-04-09T00:15:00Z	114923.038	dumblocate_round1_drive_ping_2	loop_tick	90	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:15:00Z	114923.064	dumblocate_round1_drive_ping_2	draw	90	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Recovering: reverse | Goals: 0
+2026-04-09T00:15:00Z	114923.267	dumblocate_round1_drive_ping_2	loop_tick	91	-16237.323	-28076.194	-15970.020	-27459.961	671.710	
+2026-04-09T00:15:00Z	114923.288	dumblocate_round1_drive_ping_2	draw	91	-16237.323	-28076.194	-15970.020	-27459.961	671.710	Recovering: reverse | Goals: 0
+2026-04-09T00:15:00Z	114923.491	dumblocate_round1_drive_ping_2	loop_tick	92	-16237.323	-28076.194	-15950.000	-27459.961	679.924	
+2026-04-09T00:15:00Z	114923.507	dumblocate_round1_drive_ping_2	draw	92	-16237.323	-28076.194	-15950.000	-27459.961	679.924	Recovering: reverse | Goals: 0
+2026-04-09T00:15:00Z	114923.710	dumblocate_round1_drive_ping_2	loop_tick	93	-16237.323	-28076.194	-15950.000	-27459.961	679.924	
+2026-04-09T00:15:00Z	114923.723	dumblocate_round1_drive_ping_2	draw	93	-16237.323	-28076.194	-15950.000	-27459.961	679.924	Recovering: reverse | Goals: 0
+2026-04-09T00:15:01Z	114923.925	dumblocate_round1_drive_ping_2	loop_tick	94	-16237.323	-28076.194	-15950.000	-27459.961	679.924	
+2026-04-09T00:15:01Z	114923.943	dumblocate_round1_drive_ping_2	draw	94	-16237.323	-28076.194	-15950.000	-27459.961	679.924	Recovering: reverse | Goals: 0
+2026-04-09T00:15:01Z	114924.145	dumblocate_round1_drive_ping_2	loop_tick	95	-16237.323	-28076.194	-15950.000	-27459.961	679.924	
+2026-04-09T00:15:01Z	114924.172	dumblocate_round1_drive_ping_2	draw	95	-16237.323	-28076.194	-15950.000	-27459.961	679.924	Recovering: reverse | Goals: 0
+2026-04-09T00:15:01Z	114924.383	dumblocate_round1_drive_ping_2	loop_tick	96	-16237.323	-28076.194	-15939.990	-27459.961	684.214	
+2026-04-09T00:15:01Z	114924.393	dumblocate_round1_drive_ping_2	draw	96	-16237.323	-28076.194	-15939.990	-27459.961	684.214	Recovering: reverse | Goals: 0
+2026-04-09T00:15:01Z	114924.595	dumblocate_round1_drive_ping_2	loop_tick	97	-16237.323	-28076.194	-15939.990	-27459.961	684.214	
+2026-04-09T00:15:01Z	114924.614	dumblocate_round1_drive_ping_2	draw	97	-16237.323	-28076.194	-15939.990	-27459.961	684.214	Recovering: reverse | Goals: 0
+2026-04-09T00:15:02Z	114924.816	dumblocate_round1_drive_ping_2	loop_tick	98	-16237.323	-28076.194	-15939.990	-27459.961	684.214	
+2026-04-09T00:15:02Z	114924.840	dumblocate_round1_drive_ping_2	draw	98	-16237.323	-28076.194	-15939.990	-27459.961	684.214	Recovering: reverse | Goals: 0
+2026-04-09T00:15:02Z	114925.042	dumblocate_round1_drive_ping_2	loop_tick	99	-16237.323	-28076.194	-15939.990	-27459.961	684.214	
+2026-04-09T00:15:02Z	114925.066	dumblocate_round1_drive_ping_2	draw	99	-16237.323	-28076.194	-15939.990	-27459.961	684.214	Recovering: reverse | Goals: 0
+2026-04-09T00:15:02Z	114925.268	dumblocate_round1_drive_ping_2	loop_tick	100	-16237.323	-28076.194	-15950.000	-27470.020	670.821	
+2026-04-09T00:15:02Z	114925.277	dumblocate_round1_drive_ping_2	draw	100	-16237.323	-28076.194	-15950.000	-27470.020	670.821	Recovering: reverse | Goals: 0
+2026-04-09T00:15:02Z	114925.498	dumblocate_round1_drive_ping_2	loop_tick	101	-16237.323	-28076.194	-15950.000	-27470.020	670.821	
+2026-04-09T00:15:02Z	114925.504	dumblocate_round1_drive_ping_2	draw	101	-16237.323	-28076.194	-15950.000	-27470.020	670.821	Recovering: reverse | Goals: 0
+2026-04-09T00:15:02Z	114925.707	dumblocate_round1_drive_ping_2	loop_tick	102	-16237.323	-28076.194	-15950.000	-27470.020	670.821	
+2026-04-09T00:15:02Z	114925.716	dumblocate_round1_drive_ping_2	draw	102	-16237.323	-28076.194	-15950.000	-27470.020	670.821	Recovering: reverse | Goals: 0
+2026-04-09T00:15:03Z	114925.920	dumblocate_round1_drive_ping_2	loop_tick	103	-16237.323	-28076.194	-15950.000	-27470.020	670.821	
+2026-04-09T00:15:03Z	114925.933	dumblocate_round1_drive_ping_2	draw	103	-16237.323	-28076.194	-15950.000	-27470.020	670.821	Recovering: reverse | Goals: 0
+2026-04-09T00:15:03Z	114926.138	dumblocate_round1_drive_ping_2	loop_tick	104	-16237.323	-28076.194	-15950.000	-27470.020	670.821	
+2026-04-09T00:15:03Z	114926.160	dumblocate_round1_drive_ping_2	draw	104	-16237.323	-28076.194	-15950.000	-27470.020	670.821	Recovering: reverse | Goals: 0
+2026-04-09T00:15:03Z	114926.385	dumblocate_round1_drive_ping_2	loop_tick	105	-16237.323	-28076.194	-15989.990	-27470.020	654.691	
+2026-04-09T00:15:03Z	114926.395	dumblocate_round1_drive_ping_2	draw	105	-16237.323	-28076.194	-15989.990	-27470.020	654.691	Recovering: reverse | Goals: 0
+2026-04-09T00:15:03Z	114926.598	dumblocate_round1_drive_ping_2	loop_tick	106	-16237.323	-28076.194	-15989.990	-27470.020	654.691	
+2026-04-09T00:15:03Z	114926.619	dumblocate_round1_drive_ping_2	draw	106	-16237.323	-28076.194	-15989.990	-27470.020	654.691	Recovering: reverse | Goals: 0
+2026-04-09T00:15:04Z	114926.822	dumblocate_round1_drive_ping_2	loop_tick	107	-16237.323	-28076.194	-15989.990	-27470.020	654.691	
+2026-04-09T00:15:04Z	114926.846	dumblocate_round1_drive_ping_2	draw	107	-16237.323	-28076.194	-15989.990	-27470.020	654.691	Recovering: reverse | Goals: 0
+2026-04-09T00:15:04Z	114927.049	dumblocate_round1_drive_ping_2	loop_tick	108	-16237.323	-28076.194	-15989.990	-27470.020	654.691	
+2026-04-09T00:15:04Z	114927.058	dumblocate_round1_drive_ping_2	draw	108	-16237.323	-28076.194	-15989.990	-27470.020	654.691	Recovering: reverse | Goals: 0
+2026-04-09T00:15:04Z	114927.261	dumblocate_round1_drive_ping_2	loop_tick	109	-16237.323	-28076.194	-15989.990	-27470.020	654.691	
+2026-04-09T00:15:04Z	114927.281	dumblocate_round1_drive_ping_2	draw	109	-16237.323	-28076.194	-15989.990	-27470.020	654.691	Recovering: reverse | Goals: 0
+2026-04-09T00:15:04Z	114927.485	dumblocate_round1_drive_ping_2	loop_tick	110	-16237.323	-28076.194	-16039.990	-27479.980	628.021	
+2026-04-09T00:15:04Z	114927.496	dumblocate_round1_drive_ping_2	draw	110	-16237.323	-28076.194	-16039.990	-27479.980	628.021	Recovering: reverse | Goals: 0
+2026-04-09T00:15:04Z	114927.699	dumblocate_round1_drive_ping_2	loop_tick	111	-16237.323	-28076.194	-16039.990	-27479.980	628.021	
+2026-04-09T00:15:04Z	114927.720	dumblocate_round1_drive_ping_2	draw	111	-16237.323	-28076.194	-16039.990	-27479.980	628.021	Recovering: reverse | Goals: 0
+2026-04-09T00:15:05Z	114927.923	dumblocate_round1_drive_ping_2	loop_tick	112	-16237.323	-28076.194	-16039.990	-27479.980	628.021	
+2026-04-09T00:15:05Z	114927.944	dumblocate_round1_drive_ping_2	draw	112	-16237.323	-28076.194	-16039.990	-27479.980	628.021	Recovering: reverse | Goals: 0
+2026-04-09T00:15:05Z	114928.147	dumblocate_round1_drive_ping_2	loop_tick	113	-16237.323	-28076.194	-16039.990	-27479.980	628.021	
+2026-04-09T00:15:05Z	114928.171	dumblocate_round1_drive_ping_2	draw	113	-16237.323	-28076.194	-16039.990	-27479.980	628.021	Recovering: reverse | Goals: 0
+2026-04-09T00:15:05Z	114928.374	dumblocate_round1_drive_ping_2	loop_tick	114	-16237.323	-28076.194	-16110.010	-27479.980	609.655	
+2026-04-09T00:15:05Z	114928.381	dumblocate_round1_drive_ping_2	draw	114	-16237.323	-28076.194	-16110.010	-27479.980	609.655	Recovering: reverse | Goals: 0
+2026-04-09T00:15:05Z	114928.584	dumblocate_round1_drive_ping_2	loop_tick	115	-16237.323	-28076.194	-16110.010	-27479.980	609.655	
+2026-04-09T00:15:05Z	114928.593	dumblocate_round1_drive_ping_2	draw	115	-16237.323	-28076.194	-16110.010	-27479.980	609.655	Recovering: reverse | Goals: 0
+2026-04-09T00:15:06Z	114928.796	dumblocate_round1_drive_ping_2	loop_tick	116	-16237.323	-28076.194	-16110.010	-27479.980	609.655	
+2026-04-09T00:15:06Z	114928.840	dumblocate_round1_drive_ping_2	draw	116	-16237.323	-28076.194	-16110.010	-27479.980	609.655	Recovering: reverse | Goals: 0
+2026-04-09T00:15:06Z	114929.043	dumblocate_round1_drive_ping_2	loop_tick	117	-16237.323	-28076.194	-16110.010	-27479.980	609.655	
+2026-04-09T00:15:06Z	114929.059	dumblocate_round1_drive_ping_2	draw	117	-16237.323	-28076.194	-16110.010	-27479.980	609.655	Recovering: reverse | Goals: 0
+2026-04-09T00:15:06Z	114929.262	dumblocate_round1_drive_ping_2	loop_tick	118	-16237.323	-28076.194	-16110.010	-27479.980	609.655	
+2026-04-09T00:15:06Z	114929.285	dumblocate_round1_drive_ping_2	draw	118	-16237.323	-28076.194	-16110.010	-27479.980	609.655	Recovering: reverse | Goals: 0
+2026-04-09T00:15:06Z	114929.487	dumblocate_round1_drive_ping_2	loop_tick	119	-16237.323	-28076.194	-16189.990	-27489.942	588.160	
+2026-04-09T00:15:06Z	114929.498	dumblocate_round1_drive_ping_2	draw	119	-16237.323	-28076.194	-16189.990	-27489.942	588.160	Recovering: reverse | Goals: 0
+2026-04-09T00:15:06Z	114929.701	dumblocate_round1_drive_ping_2	loop_tick	120	-16237.323	-28076.194	-16189.990	-27489.942	588.160	
+2026-04-09T00:15:06Z	114929.716	dumblocate_round1_drive_ping_2	draw	120	-16237.323	-28076.194	-16189.990	-27489.942	588.160	Recovering: reverse | Goals: 0
+2026-04-09T00:15:07Z	114929.919	dumblocate_round1_drive_ping_2	loop_tick	121	-16237.323	-28076.194	-16189.990	-27489.942	588.160	
+2026-04-09T00:15:07Z	114929.960	dumblocate_round1_drive_ping_2	draw	121	-16237.323	-28076.194	-16189.990	-27489.942	588.160	Recovering: reverse | Goals: 0
+2026-04-09T00:15:07Z	114930.164	dumblocate_round1_drive_ping_2	loop_tick	122	-16237.323	-28076.194	-16189.990	-27489.942	588.160	
+2026-04-09T00:15:07Z	114930.191	dumblocate_round1_drive_ping_2	draw	122	-16237.323	-28076.194	-16189.990	-27489.942	588.160	Recovering: reverse | Goals: 0
+2026-04-09T00:15:07Z	114930.394	dumblocate_round1_drive_ping_2	loop_tick	123	-16237.323	-28076.194	-16270.020	-27500.000	577.121	
+2026-04-09T00:15:07Z	114930.403	dumblocate_round1_drive_ping_2	draw	123	-16237.323	-28076.194	-16270.020	-27500.000	577.121	Recovering: reverse | Goals: 0
+2026-04-09T00:15:07Z	114930.606	dumblocate_round1_drive_ping_2	loop_tick	124	-16237.323	-28076.194	-16270.020	-27500.000	577.121	
+2026-04-09T00:15:07Z	114930.628	dumblocate_round1_drive_ping_2	draw	124	-16237.323	-28076.194	-16270.020	-27500.000	577.121	Recovering: reverse | Goals: 0
+2026-04-09T00:15:08Z	114930.832	dumblocate_round1_drive_ping_2	loop_tick	125	-16237.323	-28076.194	-16270.020	-27500.000	577.121	
+2026-04-09T00:15:08Z	114930.875	dumblocate_round1_drive_ping_2	draw	125	-16237.323	-28076.194	-16270.020	-27500.000	577.121	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:08Z	114931.077	dumblocate_round1_drive_ping_2	loop_tick	126	-16237.323	-28076.194	-16270.020	-27500.000	577.121	
+2026-04-09T00:15:08Z	114931.114	dumblocate_round1_drive_ping_2	draw	126	-16237.323	-28076.194	-16270.020	-27500.000	577.121	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:08Z	114931.317	dumblocate_round1_drive_ping_2	loop_tick	127	-16237.323	-28076.194	-16370.020	-27500.000	591.276	
+2026-04-09T00:15:08Z	114931.326	dumblocate_round1_drive_ping_2	draw	127	-16237.323	-28076.194	-16370.020	-27500.000	591.276	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:08Z	114931.529	dumblocate_round1_drive_ping_2	loop_tick	128	-16237.323	-28076.194	-16370.020	-27500.000	591.276	
+2026-04-09T00:15:08Z	114931.533	dumblocate_round1_drive_ping_2	draw	128	-16237.323	-28076.194	-16370.020	-27500.000	591.276	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:08Z	114931.736	dumblocate_round1_drive_ping_2	loop_tick	129	-16237.323	-28076.194	-16370.020	-27500.000	591.276	
+2026-04-09T00:15:09Z	114931.774	dumblocate_round1_drive_ping_2	draw	129	-16237.323	-28076.194	-16370.020	-27500.000	591.276	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:09Z	114931.977	dumblocate_round1_drive_ping_2	loop_tick	130	-16237.323	-28076.194	-16370.020	-27500.000	591.276	
+2026-04-09T00:15:09Z	114932.009	dumblocate_round1_drive_ping_2	draw	130	-16237.323	-28076.194	-16370.020	-27500.000	591.276	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:09Z	114932.212	dumblocate_round1_drive_ping_2	loop_tick	131	-16237.323	-28076.194	-16370.020	-27500.000	591.276	
+2026-04-09T00:15:09Z	114932.241	dumblocate_round1_drive_ping_2	draw	131	-16237.323	-28076.194	-16370.020	-27500.000	591.276	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:09Z	114932.443	dumblocate_round1_drive_ping_2	loop_tick	132	-16237.323	-28076.194	-16470.020	-27500.000	621.407	
+2026-04-09T00:15:09Z	114932.452	dumblocate_round1_drive_ping_2	draw	132	-16237.323	-28076.194	-16470.020	-27500.000	621.407	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:09Z	114932.662	dumblocate_round1_drive_ping_2	loop_tick	133	-16237.323	-28076.194	-16470.020	-27500.000	621.407	
+2026-04-09T00:15:09Z	114932.687	dumblocate_round1_drive_ping_2	draw	133	-16237.323	-28076.194	-16470.020	-27500.000	621.407	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:10Z	114932.891	dumblocate_round1_drive_ping_2	loop_tick	134	-16237.323	-28076.194	-16470.020	-27500.000	621.407	
+2026-04-09T00:15:10Z	114932.899	dumblocate_round1_drive_ping_2	draw	134	-16237.323	-28076.194	-16470.020	-27500.000	621.407	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:10Z	114933.101	dumblocate_round1_drive_ping_2	loop_tick	135	-16237.323	-28076.194	-16470.020	-27500.000	621.407	
+2026-04-09T00:15:10Z	114933.124	dumblocate_round1_drive_ping_2	draw	135	-16237.323	-28076.194	-16470.020	-27500.000	621.407	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:10Z	114933.347	dumblocate_round1_drive_ping_2	loop_tick	136	-16237.323	-28076.194	-16530.029	-27500.000	646.279	
+2026-04-09T00:15:10Z	114933.355	dumblocate_round1_drive_ping_2	draw	136	-16237.323	-28076.194	-16530.029	-27500.000	646.279	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:10Z	114933.557	dumblocate_round1_drive_ping_2	loop_tick	137	-16237.323	-28076.194	-16530.029	-27500.000	646.279	
+2026-04-09T00:15:10Z	114933.583	dumblocate_round1_drive_ping_2	draw	137	-16237.323	-28076.194	-16530.029	-27500.000	646.279	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:11Z	114933.786	dumblocate_round1_drive_ping_2	loop_tick	138	-16237.323	-28076.194	-16530.029	-27500.000	646.279	
+2026-04-09T00:15:11Z	114933.824	dumblocate_round1_drive_ping_2	draw	138	-16237.323	-28076.194	-16530.029	-27500.000	646.279	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:11Z	114934.027	dumblocate_round1_drive_ping_2	loop_tick	139	-16237.323	-28076.194	-16530.029	-27500.000	646.279	
+2026-04-09T00:15:11Z	114934.338	dumblocate_round1_drive_ping_2	draw	139	-16237.323	-28076.194	-16530.029	-27500.000	646.279	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:11Z	114934.543	dumblocate_round1_drive_ping_2	loop_tick	140	-16237.323	-28076.194	-16600.000	-27489.942	689.367	
+2026-04-09T00:15:11Z	114934.551	dumblocate_round1_drive_ping_2	draw	140	-16237.323	-28076.194	-16600.000	-27489.942	689.367	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:11Z	114934.754	dumblocate_round1_drive_ping_2	loop_tick	141	-16237.323	-28076.194	-16600.000	-27489.942	689.367	
+2026-04-09T00:15:12Z	114934.776	dumblocate_round1_drive_ping_2	draw	141	-16237.323	-28076.194	-16600.000	-27489.942	689.367	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:12Z	114934.979	dumblocate_round1_drive_ping_2	loop_tick	142	-16237.323	-28076.194	-16600.000	-27489.942	689.367	
+2026-04-09T00:15:12Z	114935.006	dumblocate_round1_drive_ping_2	draw	142	-16237.323	-28076.194	-16600.000	-27489.942	689.367	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:12Z	114935.208	dumblocate_round1_drive_ping_2	loop_tick	143	-16237.323	-28076.194	-16600.000	-27489.942	689.367	
+2026-04-09T00:15:12Z	114935.218	dumblocate_round1_drive_ping_2	draw	143	-16237.323	-28076.194	-16600.000	-27489.942	689.367	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:12Z	114935.423	dumblocate_round1_drive_ping_2	loop_tick	144	-16237.323	-28076.194	-16639.990	-27479.980	719.452	
+2026-04-09T00:15:12Z	114935.433	dumblocate_round1_drive_ping_2	draw	144	-16237.323	-28076.194	-16639.990	-27479.980	719.452	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:12Z	114935.636	dumblocate_round1_drive_ping_2	loop_tick	145	-16237.323	-28076.194	-16639.990	-27479.980	719.452	
+2026-04-09T00:15:12Z	114935.664	dumblocate_round1_drive_ping_2	draw	145	-16237.323	-28076.194	-16639.990	-27479.980	719.452	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:13Z	114935.873	dumblocate_round1_drive_ping_2	loop_tick	146	-16237.323	-28076.194	-16639.990	-27479.980	719.452	
+2026-04-09T00:15:13Z	114935.893	dumblocate_round1_drive_ping_2	draw	146	-16237.323	-28076.194	-16639.990	-27479.980	719.452	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:13Z	114936.095	dumblocate_round1_drive_ping_2	loop_tick	147	-16237.323	-28076.194	-16639.990	-27479.980	719.452	
+2026-04-09T00:15:13Z	114936.104	dumblocate_round1_drive_ping_2	draw	147	-16237.323	-28076.194	-16639.990	-27479.980	719.452	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:13Z	114936.307	dumblocate_round1_drive_ping_2	loop_tick	148	-16237.323	-28076.194	-16680.029	-27489.942	734.630	
+2026-04-09T00:15:13Z	114936.316	dumblocate_round1_drive_ping_2	draw	148	-16237.323	-28076.194	-16680.029	-27489.942	734.630	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:13Z	114936.519	dumblocate_round1_drive_ping_2	loop_tick	149	-16237.323	-28076.194	-16680.029	-27489.942	734.630	
+2026-04-09T00:15:13Z	114936.530	dumblocate_round1_drive_ping_2	draw	149	-16237.323	-28076.194	-16680.029	-27489.942	734.630	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:13Z	114936.733	dumblocate_round1_drive_ping_2	loop_tick	150	-16237.323	-28076.194	-16680.029	-27489.942	734.630	
+2026-04-09T00:15:13Z	114936.753	dumblocate_round1_drive_ping_2	draw	150	-16237.323	-28076.194	-16680.029	-27489.942	734.630	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:14Z	114936.956	dumblocate_round1_drive_ping_2	loop_tick	151	-16237.323	-28076.194	-16680.029	-27489.942	734.630	
+2026-04-09T00:15:14Z	114936.983	dumblocate_round1_drive_ping_2	draw	151	-16237.323	-28076.194	-16680.029	-27489.942	734.630	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:14Z	114937.186	dumblocate_round1_drive_ping_2	loop_tick	152	-16237.323	-28076.194	-16680.029	-27489.942	734.630	
+2026-04-09T00:15:14Z	114937.473	dumblocate_round1_drive_ping_2	draw	152	-16237.323	-28076.194	-16680.029	-27489.942	734.630	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:14Z	114937.675	dumblocate_round1_drive_ping_2	loop_tick	153	-16237.323	-28076.194	-16730.029	-27520.020	743.027	
+2026-04-09T00:15:14Z	114937.692	dumblocate_round1_drive_ping_2	draw	153	-16237.323	-28076.194	-16730.029	-27520.020	743.027	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:15Z	114937.896	dumblocate_round1_drive_ping_2	loop_tick	154	-16237.323	-28076.194	-16730.029	-27520.020	743.027	
+2026-04-09T00:15:15Z	114937.906	dumblocate_round1_drive_ping_2	draw	154	-16237.323	-28076.194	-16730.029	-27520.020	743.027	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:15Z	114938.108	dumblocate_round1_drive_ping_2	loop_tick	155	-16237.323	-28076.194	-16730.029	-27520.020	743.027	
+2026-04-09T00:15:15Z	114938.130	dumblocate_round1_drive_ping_2	draw	155	-16237.323	-28076.194	-16730.029	-27520.020	743.027	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:15Z	114938.333	dumblocate_round1_drive_ping_2	loop_tick	156	-16237.323	-28076.194	-16760.010	-27539.942	748.845	
+2026-04-09T00:15:15Z	114938.344	dumblocate_round1_drive_ping_2	draw	156	-16237.323	-28076.194	-16760.010	-27539.942	748.845	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:15Z	114938.546	dumblocate_round1_drive_ping_2	loop_tick	157	-16237.323	-28076.194	-16760.010	-27539.942	748.845	
+2026-04-09T00:15:15Z	114938.576	dumblocate_round1_drive_ping_2	draw	157	-16237.323	-28076.194	-16760.010	-27539.942	748.845	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:16Z	114938.779	dumblocate_round1_drive_ping_2	loop_tick	158	-16237.323	-28076.194	-16760.010	-27539.942	748.845	
+2026-04-09T00:15:16Z	114938.813	dumblocate_round1_drive_ping_2	draw	158	-16237.323	-28076.194	-16760.010	-27539.942	748.845	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:16Z	114939.015	dumblocate_round1_drive_ping_2	loop_tick	159	-16237.323	-28076.194	-16760.010	-27539.942	748.845	
+2026-04-09T00:15:16Z	114939.045	dumblocate_round1_drive_ping_2	draw	159	-16237.323	-28076.194	-16760.010	-27539.942	748.845	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:16Z	114939.248	dumblocate_round1_drive_ping_2	loop_tick	160	-16237.323	-28076.194	-16760.010	-27539.942	748.845	
+2026-04-09T00:15:16Z	114939.256	dumblocate_round1_drive_ping_2	draw	160	-16237.323	-28076.194	-16760.010	-27539.942	748.845	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:16Z	114939.458	dumblocate_round1_drive_ping_2	loop_tick	161	-16237.323	-28076.194	-16770.020	-27550.000	748.763	
+2026-04-09T00:15:16Z	114939.470	dumblocate_round1_drive_ping_2	draw	161	-16237.323	-28076.194	-16770.020	-27550.000	748.763	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:16Z	114939.673	dumblocate_round1_drive_ping_2	loop_tick	162	-16237.323	-28076.194	-16770.020	-27550.000	748.763	
+2026-04-09T00:15:16Z	114939.694	dumblocate_round1_drive_ping_2	draw	162	-16237.323	-28076.194	-16770.020	-27550.000	748.763	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:17Z	114939.897	dumblocate_round1_drive_ping_2	loop_tick	163	-16237.323	-28076.194	-16770.020	-27550.000	748.763	
+2026-04-09T00:15:17Z	114939.923	dumblocate_round1_drive_ping_2	draw	163	-16237.323	-28076.194	-16770.020	-27550.000	748.763	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:17Z	114940.125	dumblocate_round1_drive_ping_2	loop_tick	164	-16237.323	-28076.194	-16770.020	-27550.000	748.763	
+2026-04-09T00:15:17Z	114940.147	dumblocate_round1_drive_ping_2	draw	164	-16237.323	-28076.194	-16770.020	-27550.000	748.763	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:17Z	114940.367	dumblocate_round1_drive_ping_2	loop_tick	165	-16237.323	-28076.194	-16750.000	-27559.961	727.554	
+2026-04-09T00:15:17Z	114940.597	dumblocate_round1_drive_ping_2	draw	165	-16237.323	-28076.194	-16750.000	-27559.961	727.554	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:18Z	114940.800	dumblocate_round1_drive_ping_2	loop_tick	166	-16237.323	-28076.194	-16750.000	-27559.961	727.554	
+2026-04-09T00:15:18Z	114940.839	dumblocate_round1_drive_ping_2	draw	166	-16237.323	-28076.194	-16750.000	-27559.961	727.554	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:18Z	114941.042	dumblocate_round1_drive_ping_2	loop_tick	167	-16237.323	-28076.194	-16750.000	-27559.961	727.554	
+2026-04-09T00:15:18Z	114941.075	dumblocate_round1_drive_ping_2	draw	167	-16237.323	-28076.194	-16750.000	-27559.961	727.554	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:18Z	114941.278	dumblocate_round1_drive_ping_2	loop_tick	168	-16237.323	-28076.194	-16750.000	-27559.961	727.554	
+2026-04-09T00:15:18Z	114941.314	dumblocate_round1_drive_ping_2	draw	168	-16237.323	-28076.194	-16750.000	-27559.961	727.554	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:18Z	114941.517	dumblocate_round1_drive_ping_2	loop_tick	169	-16237.323	-28076.194	-16720.020	-27570.020	699.435	
+2026-04-09T00:15:18Z	114941.526	dumblocate_round1_drive_ping_2	draw	169	-16237.323	-28076.194	-16720.020	-27570.020	699.435	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:18Z	114941.729	dumblocate_round1_drive_ping_2	loop_tick	170	-16237.323	-28076.194	-16720.020	-27570.020	699.435	
+2026-04-09T00:15:18Z	114941.760	dumblocate_round1_drive_ping_2	draw	170	-16237.323	-28076.194	-16720.020	-27570.020	699.435	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:19Z	114941.963	dumblocate_round1_drive_ping_2	loop_tick	171	-16237.323	-28076.194	-16720.020	-27570.020	699.435	
+2026-04-09T00:15:19Z	114941.992	dumblocate_round1_drive_ping_2	draw	171	-16237.323	-28076.194	-16720.020	-27570.020	699.435	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:19Z	114942.198	dumblocate_round1_drive_ping_2	loop_tick	172	-16237.323	-28076.194	-16720.020	-27570.020	699.435	
+2026-04-09T00:15:19Z	114942.213	dumblocate_round1_drive_ping_2	draw	172	-16237.323	-28076.194	-16720.020	-27570.020	699.435	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:19Z	114942.416	dumblocate_round1_drive_ping_2	loop_tick	173	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:19Z	114942.426	dumblocate_round1_drive_ping_2	draw	173	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:19Z	114942.628	dumblocate_round1_drive_ping_2	loop_tick	174	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:19Z	114942.650	dumblocate_round1_drive_ping_2	draw	174	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:20Z	114942.853	dumblocate_round1_drive_ping_2	loop_tick	175	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:20Z	114942.864	dumblocate_round1_drive_ping_2	draw	175	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:20Z	114943.067	dumblocate_round1_drive_ping_2	loop_tick	176	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:20Z	114943.095	dumblocate_round1_drive_ping_2	draw	176	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:20Z	114943.298	dumblocate_round1_drive_ping_2	loop_tick	177	-16237.323	-28076.194	-16689.990	-27579.980	671.666	
+2026-04-09T00:15:20Z	114943.309	dumblocate_round1_drive_ping_2	draw	177	-16237.323	-28076.194	-16689.990	-27579.980	671.666	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:20Z	114943.511	dumblocate_round1_drive_ping_2	loop_tick	178	-16237.323	-28076.194	-16689.990	-27579.980	671.666	
+2026-04-09T00:15:20Z	114943.761	dumblocate_round1_drive_ping_2	draw	178	-16237.323	-28076.194	-16689.990	-27579.980	671.666	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:21Z	114943.964	dumblocate_round1_drive_ping_2	loop_tick	179	-16237.323	-28076.194	-16689.990	-27579.980	671.666	
+2026-04-09T00:15:21Z	114943.998	dumblocate_round1_drive_ping_2	draw	179	-16237.323	-28076.194	-16689.990	-27579.980	671.666	Recovering: reverse | Goals: 0
+2026-04-09T00:15:21Z	114944.201	dumblocate_round1_drive_ping_2	loop_tick	180	-16237.323	-28076.194	-16689.990	-27579.980	671.666	
+2026-04-09T00:15:21Z	114944.218	dumblocate_round1_drive_ping_2	draw	180	-16237.323	-28076.194	-16689.990	-27579.980	671.666	Recovering: reverse | Goals: 0
+2026-04-09T00:15:21Z	114944.426	dumblocate_round1_drive_ping_2	loop_tick	181	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:21Z	114944.434	dumblocate_round1_drive_ping_2	draw	181	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Recovering: reverse | Goals: 0
+2026-04-09T00:15:21Z	114944.637	dumblocate_round1_drive_ping_2	loop_tick	182	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:21Z	114944.653	dumblocate_round1_drive_ping_2	draw	182	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Recovering: reverse | Goals: 0
+2026-04-09T00:15:22Z	114944.856	dumblocate_round1_drive_ping_2	loop_tick	183	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:22Z	114944.900	dumblocate_round1_drive_ping_2	draw	183	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Recovering: reverse | Goals: 0
+2026-04-09T00:15:22Z	114945.102	dumblocate_round1_drive_ping_2	loop_tick	184	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:22Z	114945.132	dumblocate_round1_drive_ping_2	draw	184	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Recovering: reverse | Goals: 0
+2026-04-09T00:15:22Z	114945.335	dumblocate_round1_drive_ping_2	loop_tick	185	-16237.323	-28076.194	-16700.000	-27579.980	678.453	
+2026-04-09T00:15:22Z	114945.354	dumblocate_round1_drive_ping_2	draw	185	-16237.323	-28076.194	-16700.000	-27579.980	678.453	Recovering: reverse | Goals: 0
+2026-04-09T00:15:22Z	114945.557	dumblocate_round1_drive_ping_2	loop_tick	186	-16237.323	-28076.194	-16720.020	-27579.980	692.260	
+2026-04-09T00:15:22Z	114945.570	dumblocate_round1_drive_ping_2	draw	186	-16237.323	-28076.194	-16720.020	-27579.980	692.260	Recovering: reverse | Goals: 0
+2026-04-09T00:15:23Z	114945.772	dumblocate_round1_drive_ping_2	loop_tick	187	-16237.323	-28076.194	-16720.020	-27579.980	692.260	
+2026-04-09T00:15:23Z	114945.805	dumblocate_round1_drive_ping_2	draw	187	-16237.323	-28076.194	-16720.020	-27579.980	692.260	Recovering: reverse | Goals: 0
+2026-04-09T00:15:23Z	114946.007	dumblocate_round1_drive_ping_2	loop_tick	188	-16237.323	-28076.194	-16720.020	-27579.980	692.260	
+2026-04-09T00:15:23Z	114946.028	dumblocate_round1_drive_ping_2	draw	188	-16237.323	-28076.194	-16720.020	-27579.980	692.260	Recovering: reverse | Goals: 0
+2026-04-09T00:15:23Z	114946.231	dumblocate_round1_drive_ping_2	loop_tick	189	-16237.323	-28076.194	-16720.020	-27579.980	692.260	
+2026-04-09T00:15:23Z	114946.292	dumblocate_round1_drive_ping_2	draw	189	-16237.323	-28076.194	-16720.020	-27579.980	692.260	Recovering: reverse | Goals: 0
+2026-04-09T00:15:23Z	114946.495	dumblocate_round1_drive_ping_2	loop_tick	190	-16237.323	-28076.194	-16750.000	-27579.980	713.488	
+2026-04-09T00:15:23Z	114946.501	dumblocate_round1_drive_ping_2	draw	190	-16237.323	-28076.194	-16750.000	-27579.980	713.488	Recovering: reverse | Goals: 0
+2026-04-09T00:15:23Z	114946.704	dumblocate_round1_drive_ping_2	loop_tick	191	-16237.323	-28076.194	-16750.000	-27579.980	713.488	
+2026-04-09T00:15:23Z	114946.730	dumblocate_round1_drive_ping_2	draw	191	-16237.323	-28076.194	-16750.000	-27579.980	713.488	Recovering: reverse | Goals: 0
+2026-04-09T00:15:24Z	114946.933	dumblocate_round1_drive_ping_2	loop_tick	192	-16237.323	-28076.194	-16750.000	-27579.980	713.488	
+2026-04-09T00:15:24Z	114946.937	dumblocate_round1_drive_ping_2	draw	192	-16237.323	-28076.194	-16750.000	-27579.980	713.488	Recovering: reverse | Goals: 0
+2026-04-09T00:15:24Z	114947.140	dumblocate_round1_drive_ping_2	loop_tick	193	-16237.323	-28076.194	-16750.000	-27579.980	713.488	
+2026-04-09T00:15:24Z	114947.159	dumblocate_round1_drive_ping_2	draw	193	-16237.323	-28076.194	-16750.000	-27579.980	713.488	Recovering: reverse | Goals: 0
+2026-04-09T00:15:24Z	114947.362	dumblocate_round1_drive_ping_2	loop_tick	194	-16237.323	-28076.194	-16750.000	-27579.980	713.488	
+2026-04-09T00:15:24Z	114947.387	dumblocate_round1_drive_ping_2	draw	194	-16237.323	-28076.194	-16750.000	-27579.980	713.488	Recovering: reverse | Goals: 0
+2026-04-09T00:15:24Z	114947.590	dumblocate_round1_drive_ping_2	loop_tick	195	-16237.323	-28076.194	-16789.990	-27570.020	749.436	
+2026-04-09T00:15:24Z	114947.600	dumblocate_round1_drive_ping_2	draw	195	-16237.323	-28076.194	-16789.990	-27570.020	749.436	Recovering: reverse | Goals: 0
+2026-04-09T00:15:25Z	114947.803	dumblocate_round1_drive_ping_2	loop_tick	196	-16237.323	-28076.194	-16789.990	-27570.020	749.436	
+2026-04-09T00:15:25Z	114947.836	dumblocate_round1_drive_ping_2	draw	196	-16237.323	-28076.194	-16789.990	-27570.020	749.436	Recovering: reverse | Goals: 0
+2026-04-09T00:15:25Z	114948.038	dumblocate_round1_drive_ping_2	loop_tick	197	-16237.323	-28076.194	-16789.990	-27570.020	749.436	
+2026-04-09T00:15:25Z	114948.062	dumblocate_round1_drive_ping_2	draw	197	-16237.323	-28076.194	-16789.990	-27570.020	749.436	Recovering: reverse | Goals: 0
+2026-04-09T00:15:25Z	114948.266	dumblocate_round1_drive_ping_2	loop_tick	198	-16237.323	-28076.194	-16789.990	-27570.020	749.436	
+2026-04-09T00:15:25Z	114948.285	dumblocate_round1_drive_ping_2	draw	198	-16237.323	-28076.194	-16789.990	-27570.020	749.436	Recovering: reverse | Goals: 0
+2026-04-09T00:15:25Z	114948.523	dumblocate_round1_drive_ping_2	loop_tick	199	-16237.323	-28076.194	-16830.029	-27559.961	786.001	
+2026-04-09T00:15:25Z	114948.529	dumblocate_round1_drive_ping_2	draw	199	-16237.323	-28076.194	-16830.029	-27559.961	786.001	Recovering: reverse | Goals: 0
+2026-04-09T00:15:25Z	114948.733	dumblocate_round1_drive_ping_2	loop_tick	200	-16237.323	-28076.194	-16830.029	-27559.961	786.001	
+2026-04-09T00:15:25Z	114948.754	dumblocate_round1_drive_ping_2	draw	200	-16237.323	-28076.194	-16830.029	-27559.961	786.001	Recovering: reverse | Goals: 0
+2026-04-09T00:15:26Z	114948.957	dumblocate_round1_drive_ping_2	loop_tick	201	-16237.323	-28076.194	-16830.029	-27559.961	786.001	
+2026-04-09T00:15:26Z	114948.991	dumblocate_round1_drive_ping_2	draw	201	-16237.323	-28076.194	-16830.029	-27559.961	786.001	Recovering: reverse | Goals: 0
+2026-04-09T00:15:26Z	114949.193	dumblocate_round1_drive_ping_2	loop_tick	202	-16237.323	-28076.194	-16830.029	-27559.961	786.001	
+2026-04-09T00:15:26Z	114949.217	dumblocate_round1_drive_ping_2	draw	202	-16237.323	-28076.194	-16830.029	-27559.961	786.001	Recovering: reverse | Goals: 0
+2026-04-09T00:15:26Z	114949.420	dumblocate_round1_drive_ping_2	loop_tick	203	-16237.323	-28076.194	-16830.029	-27559.961	786.001	
+2026-04-09T00:15:26Z	114949.479	dumblocate_round1_drive_ping_2	draw	203	-16237.323	-28076.194	-16830.029	-27559.961	786.001	Recovering: reverse | Goals: 0
+2026-04-09T00:15:26Z	114949.682	dumblocate_round1_drive_ping_2	loop_tick	204	-16237.323	-28076.194	-16880.029	-27550.000	830.633	
+2026-04-09T00:15:26Z	114949.708	dumblocate_round1_drive_ping_2	draw	204	-16237.323	-28076.194	-16880.029	-27550.000	830.633	Recovering: reverse | Goals: 0
+2026-04-09T00:15:27Z	114949.910	dumblocate_round1_drive_ping_2	loop_tick	205	-16237.323	-28076.194	-16880.029	-27550.000	830.633	
+2026-04-09T00:15:27Z	114949.930	dumblocate_round1_drive_ping_2	draw	205	-16237.323	-28076.194	-16880.029	-27550.000	830.633	Recovering: reverse | Goals: 0
+2026-04-09T00:15:27Z	114950.133	dumblocate_round1_drive_ping_2	loop_tick	206	-16237.323	-28076.194	-16880.029	-27550.000	830.633	
+2026-04-09T00:15:27Z	114950.155	dumblocate_round1_drive_ping_2	draw	206	-16237.323	-28076.194	-16880.029	-27550.000	830.633	Recovering: reverse | Goals: 0
+2026-04-09T00:15:27Z	114950.358	dumblocate_round1_drive_ping_2	loop_tick	207	-16237.323	-28076.194	-16880.029	-27550.000	830.633	
+2026-04-09T00:15:27Z	114950.428	dumblocate_round1_drive_ping_2	draw	207	-16237.323	-28076.194	-16880.029	-27550.000	830.633	Recovering: reverse | Goals: 0
+2026-04-09T00:15:27Z	114950.632	dumblocate_round1_drive_ping_2	loop_tick	208	-16237.323	-28076.194	-16930.029	-27539.942	876.019	
+2026-04-09T00:15:27Z	114950.660	dumblocate_round1_drive_ping_2	draw	208	-16237.323	-28076.194	-16930.029	-27539.942	876.019	Recovering: reverse | Goals: 0
+2026-04-09T00:15:28Z	114950.863	dumblocate_round1_drive_ping_2	loop_tick	209	-16237.323	-28076.194	-16930.029	-27539.942	876.019	
+2026-04-09T00:15:28Z	114950.889	dumblocate_round1_drive_ping_2	draw	209	-16237.323	-28076.194	-16930.029	-27539.942	876.019	Recovering: reverse | Goals: 0
+2026-04-09T00:15:28Z	114951.092	dumblocate_round1_drive_ping_2	loop_tick	210	-16237.323	-28076.194	-16930.029	-27539.942	876.019	
+2026-04-09T00:15:28Z	114951.121	dumblocate_round1_drive_ping_2	draw	210	-16237.323	-28076.194	-16930.029	-27539.942	876.019	Recovering: reverse | Goals: 0
+2026-04-09T00:15:28Z	114951.323	dumblocate_round1_drive_ping_2	loop_tick	211	-16237.323	-28076.194	-16930.029	-27539.942	876.019	
+2026-04-09T00:15:28Z	114951.344	dumblocate_round1_drive_ping_2	draw	211	-16237.323	-28076.194	-16930.029	-27539.942	876.019	Recovering: reverse | Goals: 0
+2026-04-09T00:15:28Z	114951.547	dumblocate_round1_drive_ping_2	loop_tick	212	-16237.323	-28076.194	-17000.000	-27529.980	938.097	
+2026-04-09T00:15:28Z	114951.556	dumblocate_round1_drive_ping_2	draw	212	-16237.323	-28076.194	-17000.000	-27529.980	938.097	Recovering: reverse | Goals: 0
+2026-04-09T00:15:28Z	114951.758	dumblocate_round1_drive_ping_2	loop_tick	213	-16237.323	-28076.194	-17000.000	-27529.980	938.097	
+2026-04-09T00:15:29Z	114951.791	dumblocate_round1_drive_ping_2	draw	213	-16237.323	-28076.194	-17000.000	-27529.980	938.097	Recovering: reverse | Goals: 0
+2026-04-09T00:15:29Z	114951.994	dumblocate_round1_drive_ping_2	loop_tick	214	-16237.323	-28076.194	-17000.000	-27529.980	938.097	
+2026-04-09T00:15:29Z	114952.042	dumblocate_round1_drive_ping_2	draw	214	-16237.323	-28076.194	-17000.000	-27529.980	938.097	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:29Z	114952.245	dumblocate_round1_drive_ping_2	loop_tick	215	-16237.323	-28076.194	-17000.000	-27529.980	938.097	
+2026-04-09T00:15:29Z	114952.264	dumblocate_round1_drive_ping_2	draw	215	-16237.323	-28076.194	-17000.000	-27529.980	938.097	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:29Z	114952.467	dumblocate_round1_drive_ping_2	loop_tick	216	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	
+2026-04-09T00:15:29Z	114952.498	dumblocate_round1_drive_ping_2	draw	216	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:29Z	114952.702	dumblocate_round1_drive_ping_2	loop_tick	217	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	
+2026-04-09T00:15:29Z	114952.730	dumblocate_round1_drive_ping_2	draw	217	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:30Z	114952.934	dumblocate_round1_drive_ping_2	loop_tick	218	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	
+2026-04-09T00:15:30Z	114952.941	dumblocate_round1_drive_ping_2	draw	218	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:30Z	114953.144	dumblocate_round1_drive_ping_2	loop_tick	219	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	
+2026-04-09T00:15:30Z	114953.163	dumblocate_round1_drive_ping_2	draw	219	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:30Z	114953.368	dumblocate_round1_drive_ping_2	loop_tick	220	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	
+2026-04-09T00:15:30Z	114953.393	dumblocate_round1_drive_ping_2	draw	220	-16237.323	-28076.194	-17070.020	-27509.961	1006.978	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:30Z	114953.596	dumblocate_round1_drive_ping_2	loop_tick	221	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	
+2026-04-09T00:15:30Z	114953.606	dumblocate_round1_drive_ping_2	draw	221	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:31Z	114953.808	dumblocate_round1_drive_ping_2	loop_tick	222	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	
+2026-04-09T00:15:31Z	114953.832	dumblocate_round1_drive_ping_2	draw	222	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:31Z	114954.035	dumblocate_round1_drive_ping_2	loop_tick	223	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	
+2026-04-09T00:15:31Z	114954.067	dumblocate_round1_drive_ping_2	draw	223	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:31Z	114954.270	dumblocate_round1_drive_ping_2	loop_tick	224	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	
+2026-04-09T00:15:31Z	114954.297	dumblocate_round1_drive_ping_2	draw	224	-16237.323	-28076.194	-17130.029	-27500.000	1062.509	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:31Z	114954.499	dumblocate_round1_drive_ping_2	loop_tick	225	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	
+2026-04-09T00:15:31Z	114954.505	dumblocate_round1_drive_ping_2	draw	225	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:31Z	114954.708	dumblocate_round1_drive_ping_2	loop_tick	226	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	
+2026-04-09T00:15:31Z	114954.738	dumblocate_round1_drive_ping_2	draw	226	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:32Z	114954.941	dumblocate_round1_drive_ping_2	loop_tick	227	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	
+2026-04-09T00:15:32Z	114954.963	dumblocate_round1_drive_ping_2	draw	227	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:32Z	114955.166	dumblocate_round1_drive_ping_2	loop_tick	228	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	
+2026-04-09T00:15:32Z	114955.400	dumblocate_round1_drive_ping_2	draw	228	-16237.323	-28076.194	-17200.000	-27479.980	1132.351	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:32Z	114955.610	dumblocate_round1_drive_ping_2	loop_tick	229	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	
+2026-04-09T00:15:32Z	114955.622	dumblocate_round1_drive_ping_2	draw	229	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:33Z	114955.826	dumblocate_round1_drive_ping_2	loop_tick	230	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	
+2026-04-09T00:15:33Z	114955.851	dumblocate_round1_drive_ping_2	draw	230	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:33Z	114956.055	dumblocate_round1_drive_ping_2	loop_tick	231	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	
+2026-04-09T00:15:33Z	114956.080	dumblocate_round1_drive_ping_2	draw	231	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:33Z	114956.283	dumblocate_round1_drive_ping_2	loop_tick	232	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	
+2026-04-09T00:15:33Z	114956.332	dumblocate_round1_drive_ping_2	draw	232	-16237.323	-28076.194	-17250.000	-27459.961	1185.436	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:33Z	114956.536	dumblocate_round1_drive_ping_2	loop_tick	233	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	
+2026-04-09T00:15:33Z	114956.556	dumblocate_round1_drive_ping_2	draw	233	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:33Z	114956.760	dumblocate_round1_drive_ping_2	loop_tick	234	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	
+2026-04-09T00:15:34Z	114956.789	dumblocate_round1_drive_ping_2	draw	234	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:34Z	114956.993	dumblocate_round1_drive_ping_2	loop_tick	235	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	
+2026-04-09T00:15:34Z	114957.019	dumblocate_round1_drive_ping_2	draw	235	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:34Z	114957.222	dumblocate_round1_drive_ping_2	loop_tick	236	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	
+2026-04-09T00:15:34Z	114957.248	dumblocate_round1_drive_ping_2	draw	236	-16237.323	-28076.194	-17300.000	-27439.942	1238.588	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:34Z	114957.450	dumblocate_round1_drive_ping_2	loop_tick	237	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	
+2026-04-09T00:15:34Z	114957.459	dumblocate_round1_drive_ping_2	draw	237	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:34Z	114957.662	dumblocate_round1_drive_ping_2	loop_tick	238	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	
+2026-04-09T00:15:34Z	114957.677	dumblocate_round1_drive_ping_2	draw	238	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:35Z	114957.880	dumblocate_round1_drive_ping_2	loop_tick	239	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	
+2026-04-09T00:15:35Z	114957.895	dumblocate_round1_drive_ping_2	draw	239	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:35Z	114958.097	dumblocate_round1_drive_ping_2	loop_tick	240	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	
+2026-04-09T00:15:35Z	114958.122	dumblocate_round1_drive_ping_2	draw	240	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:35Z	114958.324	dumblocate_round1_drive_ping_2	loop_tick	241	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	
+2026-04-09T00:15:35Z	114958.593	dumblocate_round1_drive_ping_2	draw	241	-16237.323	-28076.194	-17360.010	-27439.942	1290.443	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:36Z	114958.798	dumblocate_round1_drive_ping_2	loop_tick	242	-16237.323	-28076.194	-17420.020	-27439.942	1342.978	
+2026-04-09T00:15:36Z	114958.831	dumblocate_round1_drive_ping_2	draw	242	-16237.323	-28076.194	-17420.020	-27439.942	1342.978	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:36Z	114959.033	dumblocate_round1_drive_ping_2	loop_tick	243	-16237.323	-28076.194	-17420.020	-27439.942	1342.978	
+2026-04-09T00:15:36Z	114959.066	dumblocate_round1_drive_ping_2	draw	243	-16237.323	-28076.194	-17420.020	-27439.942	1342.978	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:36Z	114959.287	dumblocate_round1_drive_ping_2	loop_tick	244	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	
+2026-04-09T00:15:36Z	114959.295	dumblocate_round1_drive_ping_2	draw	244	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:36Z	114959.497	dumblocate_round1_drive_ping_2	loop_tick	245	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	
+2026-04-09T00:15:36Z	114959.504	dumblocate_round1_drive_ping_2	draw	245	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:36Z	114959.707	dumblocate_round1_drive_ping_2	loop_tick	246	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	
+2026-04-09T00:15:36Z	114959.734	dumblocate_round1_drive_ping_2	draw	246	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:37Z	114959.937	dumblocate_round1_drive_ping_2	loop_tick	247	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	
+2026-04-09T00:15:37Z	114959.954	dumblocate_round1_drive_ping_2	draw	247	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:37Z	114960.157	dumblocate_round1_drive_ping_2	loop_tick	248	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	
+2026-04-09T00:15:37Z	114960.162	dumblocate_round1_drive_ping_2	draw	248	-16237.323	-28076.194	-17470.020	-27439.942	1387.213	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:37Z	114960.377	dumblocate_round1_drive_ping_2	loop_tick	249	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	
+2026-04-09T00:15:37Z	114960.386	dumblocate_round1_drive_ping_2	draw	249	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:37Z	114960.589	dumblocate_round1_drive_ping_2	loop_tick	250	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	
+2026-04-09T00:15:37Z	114960.611	dumblocate_round1_drive_ping_2	draw	250	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:38Z	114960.814	dumblocate_round1_drive_ping_2	loop_tick	251	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	
+2026-04-09T00:15:38Z	114960.823	dumblocate_round1_drive_ping_2	draw	251	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:38Z	114961.026	dumblocate_round1_drive_ping_2	loop_tick	252	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	
+2026-04-09T00:15:38Z	114961.062	dumblocate_round1_drive_ping_2	draw	252	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:38Z	114961.265	dumblocate_round1_drive_ping_2	loop_tick	253	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	
+2026-04-09T00:15:38Z	114961.282	dumblocate_round1_drive_ping_2	draw	253	-16237.323	-28076.194	-17510.010	-27429.980	1427.349	Heading correction: forward | Running | Goals: 0
+2026-04-09T00:15:38Z	114961.485	dumblocate_round1_drive_ping_2	loop_tick	254	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	
+2026-04-09T00:15:38Z	114961.699	dumblocate_round1_drive_ping_2	draw	254	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:39Z	114961.902	dumblocate_round1_drive_ping_2	loop_tick	255	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	
+2026-04-09T00:15:39Z	114961.935	dumblocate_round1_drive_ping_2	draw	255	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:39Z	114962.137	dumblocate_round1_drive_ping_2	loop_tick	256	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	
+2026-04-09T00:15:39Z	114962.157	dumblocate_round1_drive_ping_2	draw	256	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	Heading correction: reverse | Running | Goals: 0
+2026-04-09T00:15:39Z	114962.359	dumblocate_round1_drive_ping_2	loop_tick	257	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	
+2026-04-09T00:15:39Z	114962.366	dumblocate_round1_drive_ping_2	draw	257	-16237.323	-28076.194	-17550.000	-27420.020	1467.544	Heading correction: reverse | Running | Goals: 0

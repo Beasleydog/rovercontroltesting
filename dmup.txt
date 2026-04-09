@@ -1,0 +1,29 @@
+Rover position
+{
+  "x_cm": 129.98,
+  "y_cm": 510.058,
+  "z_cm": 79.999,
+  "heading_deg": -140.0,
+  "raw_world_x_m": -5665.7,
+  "raw_world_y_m": -10086.8,
+  "raw_world_z_m": 1440.8
+}
+
+Lidar readings
+00 front_left_wheel_hub_yaw_p30: 0.00 cm
+01 front_left_frame_yaw_p20_pitch_n20: 113.62 cm
+02 front_center_frame_forward: 121.71 cm
+03 front_right_frame_yaw_n20_pitch_n20: 472.70 cm
+04 front_right_wheel_hub_yaw_n30: 150.20 cm
+05 front_left_frame_pitch_n25: 109.61 cm
+06 front_right_frame_pitch_n25: 175.59 cm
+07 left_mid_frame_left_pitch_n20: 442.64 cm
+08 right_mid_frame_right_pitch_n20: 449.48 cm
+09 rear_left_wheel_hub_back_yaw_p40: 747.52 cm
+10 rear_left_frame_backward: 233.96 cm
+11 rear_right_frame_backward: 227.66 cm
+12 rear_right_wheel_hub_back_yaw_n40: 698.64 cm
+13 front_left_frame_yaw_p20_pitch_n10: 109.50 cm
+14 front_right_frame_yaw_n20_pitch_n10: 322.74 cm
+15 front_left_wheel_hub_yaw_p15: 383.63 cm
+16 front_right_wheel_hub_yaw_n15: 138.59 cm
